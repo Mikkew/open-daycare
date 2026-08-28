@@ -5,6 +5,11 @@
       "type": "local",
       "command": ["npx", "-y", "@playwright/mcp@latest", "--headless", "--browser", "chromium"],
       "enabled": true
+    },
+    "context7": {
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp@latest"],
+      "enabled": true
     }
   }
 }
