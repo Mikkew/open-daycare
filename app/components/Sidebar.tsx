@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 function SunIcon() {
   return (
     <svg
@@ -122,13 +126,15 @@ function LogoutIcon() {
 }
 
 const navItems = [
-  { label: "Feed", active: true, icon: <HomeIcon /> },
-  { label: "Niños", active: false, icon: <KidsIcon /> },
-  { label: "Avisos", active: false, icon: <BellIcon /> },
-  { label: "Mi cuenta", active: false, icon: <UserIcon /> },
+  { label: "Feed", href: "/", icon: <HomeIcon /> },
+  { label: "Niños", href: "/children", icon: <KidsIcon /> },
+  { label: "Avisos", href: "#", icon: <BellIcon /> },
+  { label: "Mi cuenta", href: "#", icon: <UserIcon /> },
 ];
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="sticky top-0 flex h-screen w-[248px] flex-none flex-col border-r border-[#ECE0D0] bg-[#FFFDF9] px-4 py-6">
       <a href="#" className="flex items-center gap-[11px] px-2 pb-[22px] pt-1">
@@ -152,20 +158,28 @@ export default function Sidebar() {
       </a>
 
       <nav className="flex flex-1 flex-col gap-1">
-        {navItems.map((item) => (
-          <a
-            key={item.label}
-            href="#"
-            className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] ${
-              item.active
-                ? "bg-[#FBE3D8] font-extrabold text-[#D9583C]"
-                : "bg-transparent font-semibold text-[#6E6359]"
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </a>
-        ))}
+        {navItems.map((item) => {
+          const isActive =
+            item.href !== "#" &&
+            (pathname === item.href ||
+              (item.href === "/" && pathname === "/") ||
+              (item.href === "/children" && pathname?.startsWith("/children")));
+
+          return (
+            <a
+              key={item.label}
+              href={item.href}
+              className={`flex items-center gap-3 rounded-xl px-3 py-[11px] text-[14.5px] ${
+                isActive
+                  ? "bg-[#FBE3D8] font-extrabold text-[#D9583C]"
+                  : "bg-transparent font-semibold text-[#6E6359]"
+              }`}
+            >
+              {item.icon}
+              {item.label}
+            </a>
+          );
+        })}
       </nav>
 
       <div className="mt-[10px] border-t border-[#ECE0D0] pt-[14px]">
