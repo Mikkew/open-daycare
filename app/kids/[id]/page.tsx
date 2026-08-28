@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { children, allergyLabels } from "@/app/lib/children";
+import { children } from "@/app/lib/children";
 import ParentRow from "@/app/components/ParentRow";
 
 function ArrowLeftIcon() {
