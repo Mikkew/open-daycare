@@ -127,7 +127,7 @@ function LogoutIcon() {
 
 const navItems = [
   { label: "Feed", href: "/", icon: <HomeIcon /> },
-  { label: "Niños", href: "/children", icon: <KidsIcon /> },
+  { label: "Niños", href: "/kids", icon: <KidsIcon /> },
   { label: "Avisos", href: "#", icon: <BellIcon /> },
   { label: "Mi cuenta", href: "#", icon: <UserIcon /> },
 ];
@@ -163,7 +163,7 @@ export default function Sidebar() {
             item.href !== "#" &&
             (pathname === item.href ||
               (item.href === "/" && pathname === "/") ||
-              (item.href === "/children" && pathname?.startsWith("/children")));
+              (item.href === "/kids" && pathname?.startsWith("/kids")));
 
           return (
             <a
