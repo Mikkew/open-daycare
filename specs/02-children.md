@@ -1,6 +1,6 @@
 # SPEC 02 — Niños: lista y perfil
 
-> **Status:** Aprovado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-08-27
 > **Objective:** Implementar las pantallas `ninos.dc.html` y `perfil-nino.dc.html` como `/kids` y `/kids/[id]`, con un estilo visual idéntico al proporcionado.
@@ -68,15 +68,15 @@ Convención heredada de SPEC 01: código en inglés, texto visible en español. 
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` muestra `/kids` sin errores en consola.
-- [ ] `/kids` replica la cabecera "GESTIÓN / Niños", botón "Agregar niño", campo "Buscar niño…" y divisor "SALA SOLES · 8 niños".
-- [ ] La grilla muestra los 8 niños con avatares/nombres/edades/conteo y badges correctos (MANÍ en Mateo, VINCULAR en Valentina, LACTOSA en Tomás; resto con chevron).
-- [ ] Escribir en el buscador filtra la grilla por nombre (client-side).
-- [ ] `/kids/[id]` (p. ej. `/kids/mateo-fernandez`) replica cabecera "Mateo Fernández · 3 años · Sala Soles", bloque de alergias, tabla de datos, "Resumen del día", padres vinculados (Lucía ACTIVA, Diego PENDIENTE) y "Vincular otro padre".
-- [ ] "Volver a Niños" navega a `/kids`.
-- [ ] Sidebar resalta "Niños" en ambas rutas y "Feed" en `/`; enlaces Feed/Niños reales; resto `#`.
-- [ ] "Agregar niño", "Editar", "Resumen del día", "Vincular otro padre" y "Cerrar sesión" son `#`.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `npm run dev` muestra `/kids` sin errores en consola.
+- [x] `/kids` replica la cabecera "GESTIÓN / Niños", botón "Agregar niño", campo "Buscar niño…" y divisor "SALA SOLES · 8 niños".
+- [x] La grilla muestra los 8 niños con avatares/nombres/edades/conteo y badges correctos (MANÍ en Mateo, VINCULAR en Valentina, LACTOSA en Tomás; resto con chevron).
+- [x] Escribir en el buscador filtra la grilla por nombre (client-side).
+- [x] `/kids/[id]` (p. ej. `/kids/mateo-fernandez`) replica cabecera "Mateo Fernández · 3 años · Sala Soles", bloque de alergias, tabla de datos, "Resumen del día", padres vinculados (Lucía ACTIVA, Diego PENDIENTE) y "Vincular otro padre".
+- [x] "Volver a Niños" navega a `/kids`.
+- [x] Sidebar resalta "Niños" en ambas rutas y "Feed" en `/`; enlaces Feed/Niños reales; resto `#`.
+- [x] "Agregar niño", "Editar", "Resumen del día", "Vincular otro padre" y "Cerrar sesión" son `#`.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
