@@ -25,15 +25,21 @@ function normalizeAllergies(s: string): string {
     .join(", ");
 }
 
-function isValidDate(dd: string, mm: string, yyyy: string): boolean {
+function validateDate(value: string): string | undefined {
+  if (!value.trim()) return "La fecha es obligatoria";
+  if (value.length < 10) return "Formato: dd/mm/aaaa";
+  const parts = value.split("/");
+  if (parts.length !== 3) return "Formato: dd/mm/aaaa";
+  const [dd, mm, yyyy] = parts;
   const d = parseInt(dd, 10);
   const m = parseInt(mm, 10);
   const y = parseInt(yyyy, 10);
-  if (m < 1 || m > 12) return false;
-  if (d < 1) return false;
+  if (isNaN(d) || isNaN(m) || isNaN(y)) return "Fecha inválida";
+  if (m < 1 || m > 12) return "Mes inválido (1-12)";
+  if (d < 1) return "Día inválido";
   const daysInMonth = new Date(y, m, 0).getDate();
-  if (d > daysInMonth) return false;
-  return true;
+  if (d > daysInMonth) return `Día inválido para el mes (máx. ${daysInMonth})`;
+  return undefined;
 }
 
 function formatDateMask(raw: string): string {
@@ -77,16 +83,31 @@ export default function AddChildModal() {
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setName(capitalizeWords(e.target.value));
+      if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
     },
-    []
+    [errors.name]
   );
 
   const handleDateChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setBirthDate(formatDateMask(e.target.value));
+      if (errors.birthDate) setErrors((prev) => ({ ...prev, birthDate: undefined }));
     },
-    []
+    [errors.birthDate]
   );
+
+  const handleDateBlur = useCallback(() => {
+    const err = validateDate(birthDate);
+    if (err) setErrors((prev) => ({ ...prev, birthDate: err }));
+  }, [birthDate]);
+
+  const handleNameBlur = useCallback(() => {
+    if (!name.trim()) {
+      setErrors((prev) => ({ ...prev, name: "El nombre es obligatorio" }));
+    } else if (errors.name) {
+      setErrors((prev) => ({ ...prev, name: undefined }));
+    }
+  }, [name, errors.name]);
 
   const handleAllergiesBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -102,13 +123,9 @@ export default function AddChildModal() {
       newErrors.name = "El nombre es obligatorio";
     }
 
-    const dateParts = birthDate.split("/");
-    if (!birthDate.trim()) {
-      newErrors.birthDate = "La fecha es obligatoria";
-    } else if (birthDate.length < 10) {
-      newErrors.birthDate = "Formato: dd/mm/aaaa";
-    } else if (!isValidDate(dateParts[0], dateParts[1], dateParts[2])) {
-      newErrors.birthDate = "Fecha inválida";
+    const dateErr = validateDate(birthDate);
+    if (dateErr) {
+      newErrors.birthDate = dateErr;
     }
 
     if (!room) {
@@ -210,6 +227,7 @@ export default function AddChildModal() {
                 type="text"
                 value={name}
                 onChange={handleNameChange}
+                onBlur={handleNameBlur}
                 placeholder="Ej. Martina López"
                 className={`mb-[18px] w-full rounded-[14px] border bg-[length:100%_100%] px-4 py-[13px] text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] ${
                   errors.name
@@ -233,6 +251,7 @@ export default function AddChildModal() {
                     type="text"
                     value={birthDate}
                     onChange={handleDateChange}
+                    onBlur={handleDateBlur}
                     placeholder="dd/mm/aaaa"
                     maxLength={10}
                     className={`w-full rounded-[14px] border px-4 py-[13px] text-[15px] text-[#3F362E] placeholder:text-[#B6A99B] ${
