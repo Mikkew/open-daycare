@@ -1,6 +1,6 @@
 # SPEC 03 — Autenticación: login y activación de cuenta
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-08-28
 > **Objective:** Implementar las pantallas `login.dc.html` y `activar-cuenta.dc.html` como `/login` y `/activate`, full-page (sin sidebar), con estilo visual idéntico.
@@ -49,16 +49,16 @@ Convención heredada de SPEC 01/02: código en inglés, texto visible en españo
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` muestra `/login` y `/activate` sin errores en consola y **sin** sidebar.
-- [ ] `/login` replica el panel izquierdo: gradiente, logo "OpenDayCare", titular, subtítulo y "🌿 Guardería Sala Soles".
-- [ ] El selector Personal/Familia alterna el estilo activo y prellena el email (`caro@opendaycare.com` / `lucia.fernandez@gmail.com`) al hacer clic.
-- [ ] "Iniciar sesión" navega a `/` (ambos roles, mock).
-- [ ] "¿Te invitó la guardería? Activá tu cuenta" navega a `/activate`.
-- [ ] `/activate` replica: logo, "Bienvenida a OpenDayCare", tarjeta "Mateo · Sala Soles", código `7K4P9`, email prellenado, crear contraseña, checkbox de autorización, "Activar mi cuenta" y "¿Ya tenés cuenta? Iniciar sesión" → `/login`.
-- [ ] "Activar mi cuenta" navega a `/` (mock).
-- [ ] `/` y `/kids` siguen funcionando con sidebar tras el refactor de route groups.
-- [ ] Fondo `#FBF4EC` en ambas pantallas; Fredoka en títulos/logo, Nunito en el cuerpo.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `npm run dev` muestra `/login` y `/activate` sin errores en consola y **sin** sidebar.
+- [x] `/login` replica el panel izquierdo: gradiente, logo "OpenDayCare", titular, subtítulo y "🌿 Guardería Sala Soles".
+- [x] El selector Personal/Familia alterna el estilo activo y prellena el email (`caro@opendaycare.com` / `lucia.fernandez@gmail.com`) al hacer clic.
+- [x] "Iniciar sesión" navega a `/` (ambos roles, mock).
+- [x] "¿Te invitó la guardería? Activá tu cuenta" navega a `/activate`.
+- [x] `/activate` replica: logo, "Bienvenida a OpenDayCare", tarjeta "Mateo · Sala Soles", código `7K4P9`, email prellenado, crear contraseña, checkbox de autorización, "Activar mi cuenta" y "¿Ya tenés cuenta? Iniciar sesión" → `/login`.
+- [x] "Activar mi cuenta" navega a `/` (mock).
+- [x] `/` y `/kids` siguen funcionando con sidebar tras el refactor de route groups.
+- [x] Fondo `#FBF4EC` en ambas pantallas; Fredoka en títulos/logo, Nunito en el cuerpo.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
