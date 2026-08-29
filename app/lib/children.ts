@@ -141,3 +141,5 @@ export const children: Child[] = [
     parentsCount: 1,
   },
 ];
+
+export const rooms: string[] = ["Soles", "Lunas", "Estrellas"];
