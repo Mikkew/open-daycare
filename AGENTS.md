@@ -34,3 +34,7 @@ Specs live in `specs/` (created on demand). Use the bundled skills:
 
 - Playwright: screenshots and anything Playwright-related go in `.playwright-mcp/` (git-ignored).
 - Context7: use it to fetch up-to-date framework docs.
+
+## Agents
+
+- `spec-verifier`: Verifies acceptance criteria of a spec file. Reviews implementation against each criterion, fixes code/spec issues found, and marks checkboxes. Uses Playwright MCP with vision to compare screenshots against references, and Context7 MCP to validate Next.js best practices.

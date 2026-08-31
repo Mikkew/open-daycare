@@ -1,5 +1,5 @@
-import PostCard from "./components/PostCard";
-import { posts } from "./lib/feed";
+import PostCard from "@/app/components/PostCard";
+import { posts } from "@/app/lib/feed";
 
 function CameraIcon() {
   return (
