@@ -57,16 +57,16 @@ Convención heredada de SPEC 01/02: código en inglés, texto visible en españo
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` muestra `/kids` sin errores en consola.
-- [ ] Clic en "Agregar niño" abre el modal replicando `agregar-nino.dc.html` (tarjeta, cabecera Cancelar/Agregar niño/Guardar, 5 campos).
-- [ ] El dropdown "Sala" lista **Soles, Lunas, Estrellas**.
-- [ ] "Fecha de nacimiento" acepta solo dígitos y auto-inserta `/` (formato `dd/mm/aaaa`, máx. 10 caracteres).
-- [ ] "Nombre completo" filtra dígitos/símbolos y capitaliza cada palabra.
-- [ ] "Alergias" normaliza etiquetas separadas por coma.
-- [ ] Con nombre/fecha/sala vacíos, "Guardar" muestra error y no cierra.
-- [ ] Con nombre/fecha/sala completos, "Guardar" cierra el modal y vuelve a `/kids` (sin persistir).
-- [ ] "Cancelar" cierra el modal sin cambios.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `npm run dev` muestra `/kids` sin errores en consola.
+- [x] Clic en "Agregar niño" abre el modal replicando `agregar-nino.dc.html` (tarjeta, cabecera Cancelar/Agregar niño/Guardar, 5 campos).
+- [x] El dropdown "Sala" lista **Soles, Lunas, Estrellas**.
+- [x] "Fecha de nacimiento" acepta solo dígitos y auto-inserta `/` (formato `dd/mm/aaaa`, máx. 10 caracteres).
+- [x] "Nombre completo" filtra dígitos/símbolos y capitaliza cada palabra.
+- [x] "Alergias" normaliza etiquetas separadas por coma.
+- [x] Con nombre/fecha/sala vacíos, "Guardar" muestra error y no cierra.
+- [x] Con nombre/fecha/sala completos, "Guardar" cierra el modal y vuelve a `/kids` (sin persistir).
+- [x] "Cancelar" cierra el modal sin cambios.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
