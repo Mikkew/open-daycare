@@ -6,9 +6,16 @@ import { rooms } from "@/app/lib/children";
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function capitalizeWords(s: string): string {
-  return s
+  const endsWithSpace = s.endsWith(" ");
+  const cleaned = s
     .replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
     .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+  return endsWithSpace ? cleaned + " " : cleaned;
     .split(/(\s+)/)
     .map((part) => {
       if (part.match(/\s/)) return part;
