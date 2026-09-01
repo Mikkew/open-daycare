@@ -16,12 +16,6 @@ function capitalizeWords(s: string): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
   return endsWithSpace ? cleaned + " " : cleaned;
-    .split(/(\s+)/)
-    .map((part) => {
-      if (part.match(/\s/)) return part;
-      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-    })
-    .join("");
 }
 
 function normalizeAllergies(s: string): string {
