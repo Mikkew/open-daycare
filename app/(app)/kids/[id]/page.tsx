@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { children } from "@/app/lib/children";
-import ParentRow from "@/app/components/ParentRow";
+import ParentsSection from "@/app/components/ParentsSection";
 
 function ArrowLeftIcon() {
   return (
@@ -52,23 +52,6 @@ function AlertIcon() {
     >
       <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
       <path d="M12 9v4M12 17h.01" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 5v14M5 12h14" />
     </svg>
   );
 }
@@ -178,28 +161,10 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
           </a>
 
           {/* Linked parents */}
-          <div className="rounded-[16px] border border-[#ECE0D0] bg-[#FFFDF9] p-[16px_18px]">
-            <div className="mb-[14px] text-[12.5px] font-extrabold tracking-wide text-[#8A7C6D]">
-              PADRES VINCULADOS
-            </div>
-            <div className="flex flex-col gap-[14px]">
-              {child.parents &&
-                child.parents.map((parent) => (
-                  <ParentRow key={parent.name} parent={parent} />
-                ))}
-              <a
-                href="#"
-                className="flex items-center gap-3 pt-2"
-              >
-                <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-[#D8CBBA] text-[#B0A290]">
-                  <PlusIcon />
-                </span>
-                <span className="text-[14.5px] font-extrabold text-[#C5503A]">
-                  Vincular otro padre
-                </span>
-              </a>
-            </div>
-          </div>
+          <ParentsSection
+            childName={child.name}
+            initialParents={child.parents ?? []}
+          />
         </div>
       </div>
     </div>
