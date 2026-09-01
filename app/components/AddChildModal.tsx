@@ -6,7 +6,8 @@ import { rooms } from "@/app/lib/children";
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function capitalizeWords(s: string): string {
-  return s
+  const endsWithSpace = s.endsWith(" ");
+  const cleaned = s
     .replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
     .replace(/\s+/g, " ")
     .trim()
@@ -14,6 +15,7 @@ function capitalizeWords(s: string): string {
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
+  return endsWithSpace ? cleaned + " " : cleaned;
 }
 
 function normalizeAllergies(s: string): string {
