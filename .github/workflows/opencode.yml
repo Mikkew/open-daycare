@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: opencode github run
         env:
-          MODEL: opencode-go/deepseek-v4-pro
+          MODEL: opencode-go/glm-5.2
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           USE_GITHUB_TOKEN: 'true'
