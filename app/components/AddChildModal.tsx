@@ -9,11 +9,12 @@ function capitalizeWords(s: string): string {
   return s
     .replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
     .replace(/\s+/g, " ")
-    .trim()
-    .split(" ")
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(" ");
+    .split(/(\s+)/)
+    .map((part) => {
+      if (part.match(/\s/)) return part;
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    })
+    .join("");
 }
 
 function normalizeAllergies(s: string): string {
