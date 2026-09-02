@@ -15,6 +15,18 @@ Next.js 16 (App Router) + React 19 + Tailwind CSS v4 + TypeScript. Package manag
 - `app/` is still the `create-next-app` starter — feature work has not started. The product is "Open DayCare" (a daycare app).
 - `references/Open-DayCare/` holds design mockups (`.dc.html` screens + `screenshots/`) in Spanish. They are reference designs only — not app code, not imported. Build the app from these.
 
+## Supabase
+
+Backend is Supabase (Postgres + Auth + Storage + Realtime). Always use the `supabase` skill for any Supabase task and `supabase-postgres-best-practices` before writing/changing anything in Postgres (schema, migrations, RLS, indexes, functions, queries).
+
+- Project URL: `https://wfieadupkizxwxvkaosz.supabase.co`
+- Client env vars (in `.env`, currently empty) — never commit secret keys, use only publishable keys in client code:
+  - `NEXT_PUBLIC_SUPABASE_URL=https://wfieadupkizxwxvkaosz.supabase.co`
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_Er8bLaaKjwkDL4pYTc03Pw_Fz8Rgd1L`
+- Never expose the `service_role`/secret key in `NEXT_PUBLIC_*` vars.
+- Enable RLS on every table in exposed schemas (including `public`).
+- DB reference (tables/columns to create — not yet in the database) lives in the sibling workspace `07-DB-Schema`.
+
 ## Commands
 
 - `npm run dev` — dev server (http://localhost:3000)
@@ -30,10 +42,16 @@ Specs live in `specs/` (created on demand). Use the bundled skills:
 - `/spec-impl NN-slug` — implements only when state means Approved; creates branch `spec-NN-slug`; never commits automatically.
 - Branch creation is controlled by `specs/.spec-config.yml` (`AutoCreateBranch`, default `true`).
 
+Bundled skills (see `skills-lock.json`):
+
+- `supabase` — use for any Supabase task (Database, Auth, Edge Functions, Realtime, Storage, RLS, migrations, debugging). Load before any Supabase work.
+- `supabase-postgres-best-practices` — Postgres best practices (schema, RLS, indexes, functions, performance). Load before writing/changing anything in Postgres.
+
 ## MCPs
 
 - Playwright: screenshots and anything Playwright-related go in `.playwright-mcp/` (git-ignored).
 - Context7: use it to fetch up-to-date framework docs.
+- Supabase: use `list_tables`, `apply_migration`, `execute_sql`, `get_advisors`, `get_logs`, etc. for remote DB work. For local dev prefer the Supabase CLI (`supabase`).
 
 ## Agents
 
