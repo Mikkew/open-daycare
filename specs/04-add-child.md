@@ -1,6 +1,6 @@
 # SPEC 04 — Agregar niño (modal de alta)
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 02, SPEC 03
 > **Date:** 2026-08-29
 > **Objective:** Implementar el botón "Agregar niño" de `/kids` como un modal/overlay que replica `agregar-nino.dc.html`, con campos obligatorios y máscaras de formato.
