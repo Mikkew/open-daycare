@@ -1,6 +1,6 @@
 # SPEC 05 — Vincular padre/madre/tutor (modal)
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 02, SPEC 04
 > **Date:** 2026-08-31
 > **Objective:** Implementar un modal en `/kids/[id]` que replica `vincular-padre.dc.html` para vincular un padre/madre/tutor, con validación de nombre y email, agregando un padre pendiente al mock del niño.
