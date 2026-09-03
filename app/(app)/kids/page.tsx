@@ -3,7 +3,7 @@ import ChildrenList from "@/app/components/ChildrenList";
 import AddChildModal from "@/app/components/AddChildModal";
 
 export default async function KidsPage() {
-  const supabase = getServerClient();
+  const supabase = await getServerClient();
 
   const { data: children, error } = await supabase
     .from("children")

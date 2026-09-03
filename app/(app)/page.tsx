@@ -12,7 +12,7 @@ const postTypeToKind: Record<string, Post["kind"]> = {
 };
 
 export default async function Home() {
-  const supabase = getServerClient();
+  const supabase = await getServerClient();
 
   const { data: posts, error } = await supabase
     .from("posts")

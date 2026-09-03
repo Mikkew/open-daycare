@@ -1,9 +1,9 @@
-import { createServerClient, parseCookieHeader } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/lib/database.types";
 
-export function getServerClient() {
-  const cookieStore = cookies();
+export async function getServerClient() {
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,7 +11,7 @@ export function getServerClient() {
     {
       cookies: {
         getAll() {
-          return parseCookieHeader(cookieStore.toString());
+          return cookieStore.getAll();
         },
         setAll() {
           // Cannot set cookies in server components — middleware handles this

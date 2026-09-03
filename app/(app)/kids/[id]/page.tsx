@@ -88,7 +88,7 @@ interface Params {
 
 export default async function KidProfilePage({ params }: { params: Promise<Params> }) {
   const { id } = await params;
-  const supabase = getServerClient();
+  const supabase = await getServerClient();
 
   const { data: child, error } = await supabase
     .from("children")

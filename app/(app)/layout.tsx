@@ -2,7 +2,7 @@ import Sidebar from "@/app/components/Sidebar";
 import { getServerClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = getServerClient();
+  const supabase = await getServerClient();
 
   // Demo: fetch staff user from seed data for display
   const { data: user } = await supabase
