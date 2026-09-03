@@ -1,6 +1,6 @@
 # SPEC 08 — Usuarios de prueba: staff + admin con Supabase Auth real
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 03, SPEC 07
 > **Date:** 2026-09-02
 > **Objective:** Crear usuarios staff y admin reales con Supabase Auth funcional (email + password confirmados) para poder probar login y la relación 1:N daycare → users.
@@ -102,15 +102,15 @@ Un `daycare` tiene muchos `users` (1:N). La FK `users.daycare_id → daycares.id
 
 ## Acceptance criteria
 
-- [ ] El usuario `caro@guarderia.com` existe en `auth.users` con rol `staff` y fila en `public.users`.
-- [ ] El usuario `admin@guarderia.com` existe en `auth.users` con rol `admin` y fila en `public.users`.
-- [ ] Ambos usuarios están vinculados al daycare "Guardería Sala Soles" (`daycare_id` correcto).
-- [ ] El trigger `handle_new_user` crea automáticamente la fila en `public.users` al crear un auth user.
-- [ ] Los emails están confirmados (`email_confirmed_at IS NOT NULL`).
-- [ ] RLS permite que staff tenga acceso de lectura/escritura a posts, children, rooms de su daycare.
-- [ ] RLS permite que admin tenga acceso total.
-- [ ] Las credenciales de prueba están documentadas para desarrollo.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] El usuario `caro@guarderia.com` existe en `auth.users` con rol `staff` y fila en `public.users`.
+- [x] El usuario `admin@guarderia.com` existe en `auth.users` con rol `admin` y fila en `public.users`.
+- [x] Ambos usuarios están vinculados al daycare "Guardería Sala Soles" (`daycare_id` correcto).
+- [x] El trigger `handle_new_user` crea automáticamente la fila en `public.users` al crear un auth user.
+- [x] Los emails están confirmados (`email_confirmed_at IS NOT NULL`).
+- [x] RLS permite que staff tenga acceso de lectura/escritura a posts, children, rooms de su daycare.
+- [x] RLS permite que admin tenga acceso total.
+- [x] Las credenciales de prueba están documentadas para desarrollo.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
 
 ## Decisions
 
