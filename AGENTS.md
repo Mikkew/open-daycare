@@ -43,6 +43,7 @@ Specs live in `specs/` (created on demand). Use the bundled skills:
 - `/spec` — design a spec section-by-section; saves to `specs/NN-slug.md` (state `Draft`). Never mark it `Approved` yourself.
 - `/spec-impl NN-slug` — implements only when state means Approved; creates branch `spec-NN-slug`; never commits automatically.
 - Branch creation is controlled by `specs/.spec-config.yml` (`AutoCreateBranch`, default `true`).
+- **Database-related specs** MUST be saved in `specs/database/NN-slug.md` instead of the root `specs/` folder.
 
 Bundled skills (see `skills-lock.json`):
 

@@ -40,6 +40,7 @@ export default async function Home() {
   const mappedPosts: Post[] = (posts || []).map((post) => {
     const kind = postTypeToKind[post.type] || "activity";
     const children = post.post_children?.map((pc: { children: { full_name: string } }) => pc.children.full_name) || [];
+    const firstChild = children[0] || "";
     const audience =
       kind === "announcement"
         ? "Para: toda la sala"
@@ -52,7 +53,7 @@ export default async function Home() {
     return {
       id: post.id,
       kind,
-      author: kind === "announcement" ? "Anuncio general" : post.users?.full_name || "",
+      author: kind === "announcement" ? "Anuncio general" : firstChild,
       time,
       audience,
       body: post.body,

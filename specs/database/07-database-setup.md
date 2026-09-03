@@ -212,17 +212,17 @@ child_status: active | archived
 
 ## Acceptance criteria
 
-- [ ] `npm run dev` muestra `/`, `/kids`, `/kids/[id]` sin errores en consola.
-- [ ] Las 10 tablas (`daycares`, `users`, `rooms`, `children`, `child_allergy_tags`, `parent_children`, `posts`, `post_children`, `post_photos` + enums) existen en Supabase con RLS habilitada.
-- [ ] Las migraciones se aplicaron sin errores y están versionadas.
-- [ ] El seed data incluye: 1 daycare, 3 salas, 8 niños, 1 usuario staff, 3 posts.
-- [ ] `/` muestra posts desde la base de datos (no desde array estático), con badges correctos (LOGRO, ACTIVIDAD, ANUNCIO) y contadores de likes/comments.
-- [ ] `/kids` muestra la lista de niños activos desde la base de datos, con badges de alergia y conteo de padres vinculados.
-- [ ] `/kids/[id]` (p. ej. perfil de Mateo) muestra datos del niño desde la base de datos: alergias, notas, fecha de nacimiento, sala, padres vinculados.
-- [ ] La Sidebar muestra el nombre y rol del usuario staff desde la base de datos.
-- [ ] Los modales de agregar niño, vincular padre y crear publicación siguen siendo mock (no persisten), consistentes con SPEC 04/05/06.
-- [ ] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
-- [ ] `npm run build` completa exitosamente.
+- [x] `npm run dev` muestra `/`, `/kids`, `/kids/[id]` sin errores en consola.
+- [x] Las 10 tablas (`daycares`, `users`, `rooms`, `children`, `child_allergy_tags`, `parent_children`, `posts`, `post_children`, `post_photos` + enums) existen en Supabase con RLS habilitada.
+- [x] Las migraciones se aplicaron sin errores y están versionadas.
+- [x] El seed data incluye: 1 daycare, 3 salas, 8 niños, 1 usuario staff, 3 posts.
+- [x] `/` muestra posts desde la base de datos (no desde array estático), con badges correctos (LOGRO, ACTIVIDAD, ANUNCIO) y contadores de likes/comments.
+- [x] `/kids` muestra la lista de niños activos desde la base de datos, con badges de alergia y conteo de padres vinculados.
+- [x] `/kids/[id]` (p. ej. perfil de Mateo) muestra datos del niño desde la base de datos: alergias, notas, fecha de nacimiento, sala, padres vinculados.
+- [x] La Sidebar muestra el nombre y rol del usuario staff desde la base de datos.
+- [x] Los modales de agregar niño, vincular padre y crear publicación siguen siendo mock (no persisten), consistentes con SPEC 04/05/06.
+- [x] `npx tsc --noEmit` y `npm run lint` pasan sin errores.
+- [x] `npm run build` completa exitosamente.
 
 ## Decisions
 
