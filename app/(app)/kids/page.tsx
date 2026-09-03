@@ -1,7 +1,42 @@
+import { getServerClient } from "@/lib/supabase/server";
 import ChildrenList from "@/app/components/ChildrenList";
 import AddChildModal from "@/app/components/AddChildModal";
 
-export default function KidsPage() {
+export default async function KidsPage() {
+  const supabase = await getServerClient();
+
+  const { data: children, error } = await supabase
+    .from("children")
+    .select(
+      `
+      id,
+      full_name,
+      birth_date,
+      enrolled_at,
+      room_id,
+      status,
+      rooms (name),
+      child_allergy_tags (tag),
+      parent_children (id)
+    `
+    )
+    .eq("status", "active")
+    .order("full_name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching children:", error);
+  }
+
+  const mappedChildren = (children || []).map((child) => ({
+    id: child.id,
+    name: child.full_name,
+    room: child.rooms?.name || "",
+    birthDate: child.birth_date,
+    enrolledAt: child.enrolled_at,
+    allergies: child.child_allergy_tags?.map((t: { tag: string }) => t.tag) || [],
+    parentsCount: child.parent_children?.length || 0,
+  }));
+
   return (
     <div className="mx-auto w-full max-w-[880px] px-10 py-[34px] pb-20">
       <div className="mb-[22px] flex items-end justify-between gap-4">
@@ -16,7 +51,7 @@ export default function KidsPage() {
         <AddChildModal />
       </div>
 
-      <ChildrenList />
+      <ChildrenList kids={mappedChildren} />
     </div>
   );
 }

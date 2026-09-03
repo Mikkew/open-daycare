@@ -27,6 +27,8 @@ Backend is Supabase (Postgres + Auth + Storage + Realtime). Always use the `supa
 - Enable RLS on every table in exposed schemas (including `public`).
 - DB reference (tables/columns to create — not yet in the database) lives in the sibling workspace `07-DB-Schema`.
 
+**Migrations (mandatory):** Any change to the database schema (DDL) MUST go through a migration file in `supabase/migrations/`. Use the `supabase_apply_migration` tool to apply it. Never use `execute_sql` for DDL — it's only for read-only queries, seeding, or debugging. Each migration is a versioned, sequential SQL file that gets applied to the remote project.
+
 ## Commands
 
 - `npm run dev` — dev server (http://localhost:3000)

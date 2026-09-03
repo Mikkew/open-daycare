@@ -139,7 +139,7 @@ export default function LoginForm() {
 
       <p className="mt-[24px] text-center text-[14.5px] text-[#94887B]">
         ¿Te invitó la guardería?{" "}
-        <Link href="/activate" className="font-extrabold text-[#C5503A]">
+        <Link href="/auth/activate" className="font-extrabold text-[#C5503A]">
           Activá tu cuenta
         </Link>
       </p>

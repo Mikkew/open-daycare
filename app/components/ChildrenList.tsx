@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { children } from "@/app/lib/children";
 import ChildCard from "@/app/components/ChildCard";
+import type { AllergyTag } from "@/app/lib/children";
+
+const avatarColors = [
+  { bg: "#A9D9E8", text: "#1F7A93" },
+  { bg: "#F4B8CC", text: "#C44A7A" },
+  { bg: "#B9DEC4", text: "#3E8B62" },
+  { bg: "#F4DC8E", text: "#9A7B1E" },
+  { bg: "#C9B6E8", text: "#7B5FC0" },
+  { bg: "#A9C7E8", text: "#4A7CB5" },
+];
 
 function SearchIcon() {
   return (
@@ -22,10 +31,20 @@ function SearchIcon() {
   );
 }
 
-export default function ChildrenList() {
+interface ChildData {
+  id: string;
+  name: string;
+  room: string;
+  birthDate: string;
+  enrolledAt: string;
+  allergies: string[];
+  parentsCount: number;
+}
+
+export default function ChildrenList({ kids }: { kids: ChildData[] }) {
   const [query, setQuery] = useState("");
 
-  const filtered = children.filter((child) =>
+  const filtered = kids.filter((child) =>
     child.name.toLowerCase().includes(query.toLowerCase())
   );
 
@@ -52,10 +71,39 @@ export default function ChildrenList() {
       </div>
 
       <div className="grid grid-cols-2 gap-[14px]">
-        {filtered.map((child) => (
-          <ChildCard key={child.id} child={child} />
-        ))}
+        {filtered.map((child, i) => {
+          const colors = avatarColors[i % avatarColors.length];
+          const age = calculateAge(child.birthDate);
+          const isLinked = child.parentsCount === 0;
+          return (
+            <ChildCard
+              key={child.id}
+              child={{
+                id: child.id,
+                name: child.name,
+                age,
+                room: child.room,
+                parentsCount: child.parentsCount,
+                allergies: child.allergies as AllergyTag[],
+                linkPrompt: isLinked,
+                avatarColor: colors.bg,
+                avatarText: colors.text,
+              }}
+            />
+          );
+        })}
       </div>
     </>
   );
+}
+
+function calculateAge(birthDate: string): number {
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
 }
