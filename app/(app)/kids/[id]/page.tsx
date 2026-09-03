@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { children } from "@/app/lib/children";
+import { getServerClient } from "@/lib/supabase/server";
 import ParentsSection from "@/app/components/ParentsSection";
+import { getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
+import type { AllergyTag } from "@/app/lib/children";
 
 function ArrowLeftIcon() {
   return (
@@ -56,19 +58,77 @@ function AlertIcon() {
   );
 }
 
+const avatarColors = [
+  { bg: "#A9D9E8", text: "#1F7A93" },
+  { bg: "#F4B8CC", text: "#C44A7A" },
+  { bg: "#B9DEC4", text: "#3E8B62" },
+  { bg: "#F4DC8E", text: "#9A7B1E" },
+  { bg: "#C9B6E8", text: "#7B5FC0" },
+];
+
+function calculateAge(birthDate: string): number {
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+}
+
 interface Params {
   id: string;
 }
 
 export default async function KidProfilePage({ params }: { params: Promise<Params> }) {
   const { id } = await params;
-  const child = children.find((c) => c.id === id);
+  const supabase = getServerClient();
 
-  if (!child) {
+  const { data: child, error } = await supabase
+    .from("children")
+    .select(
+      `
+      id,
+      full_name,
+      birth_date,
+      enrolled_at,
+      medical_notes,
+      photo_consent,
+      status,
+      rooms (name),
+      child_allergy_tags (tag),
+      parent_children (
+        id,
+        relationship,
+        users!parent_children_parent_id_fkey (id, full_name, role, status)
+      )
+    `
+    )
+    .eq("id", id)
+    .single();
+
+  if (error || !child) {
     notFound();
   }
 
-  const initial = child.name.charAt(0);
+  const allergies = child.child_allergy_tags?.map((t: { tag: string }) => t.tag as AllergyTag) || [];
+  const linkedParents = (child.parent_children || []).map((pc: { relationship: string; users: { id: string; full_name: string; role: string; status: string } }, i: number) => ({
+    name: pc.users.full_name,
+    relation: pc.relationship === "father" ? "Papá" : pc.relationship === "mother" ? "Mamá" : "Tutor",
+    status: (pc.users.status === "active" ? "active" : "pending") as "active" | "pending",
+    avatarColor: avatarColors[i % avatarColors.length].bg,
+  }));
+
+  const age = calculateAge(child.birth_date);
+  const initial = child.full_name.charAt(0);
+  const colorIndex = child.full_name.charCodeAt(0) % avatarColors.length;
+  const colors = avatarColors[colorIndex];
 
   return (
     <div className="mx-auto w-full max-w-[820px] px-10 py-[34px] pb-20">
@@ -87,16 +147,16 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
           <div className="flex items-center gap-[18px]">
             <div
               className="flex h-[84px] w-[84px] flex-none items-center justify-center rounded-full font-fredoka text-[34px] font-semibold"
-              style={{ backgroundColor: child.avatarColor, color: child.avatarText }}
+              style={{ backgroundColor: colors.bg, color: colors.text }}
             >
               {initial}
             </div>
             <div className="flex-1">
               <h1 className="m-0 font-fredoka text-[28px] font-semibold text-[#3F362E]">
-                {child.name}
+                {child.full_name}
               </h1>
               <p className="mt-[3px] text-[15px] text-[#94887B]">
-                {child.age} años · Sala {child.room}
+                {age} años · Sala {child.rooms?.name || ""}
               </p>
             </div>
             <a
@@ -107,8 +167,26 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
             </a>
           </div>
 
-          {/* Allergies & notes */}
-          {child.notes && (
+          {/* Allergy badges */}
+          {allergies.length > 0 && (
+            <div className="flex flex-wrap gap-[8px]">
+              {allergies.map((tag: AllergyTag) => (
+                <span
+                  key={tag}
+                  className="rounded-full px-[11px] py-[6px] text-[12px] font-extrabold"
+                  style={{
+                    backgroundColor: getAllergyBadgeColors(tag).bg,
+                    color: getAllergyBadgeColors(tag).text,
+                  }}
+                >
+                  {getAllergyLabel(tag)}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Medical notes */}
+          {child.medical_notes && (
             <div className="flex gap-[14px] rounded-[16px] bg-[#FBDAD6] p-[16px_18px]">
               <div className="flex h-10 w-10 flex-none items-center justify-center rounded-[11px] bg-[#F4A8A0]">
                 <AlertIcon />
@@ -118,7 +196,7 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
                   Alergias y notas
                 </div>
                 <div className="text-[14.5px] leading-[1.5] text-[#B25249]">
-                  {child.notes}
+                  {child.medical_notes}
                 </div>
               </div>
             </div>
@@ -131,19 +209,19 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
                 Fecha de nacimiento
               </span>
               <span className="text-[14.5px] font-extrabold text-[#3F362E]">
-                {child.birthDate || "—"}
+                {formatDate(child.birth_date)}
               </span>
             </div>
             <div className="flex justify-between border-b border-[#F0E6D8] px-[18px] py-[15px]">
               <span className="text-[14.5px] text-[#94887B]">Sala</span>
               <span className="text-[14.5px] font-extrabold text-[#3F362E]">
-                {child.room}
+                {child.rooms?.name || "—"}
               </span>
             </div>
             <div className="flex justify-between px-[18px] py-[15px]">
               <span className="text-[14.5px] text-[#94887B]">Ingreso</span>
               <span className="text-[14.5px] font-extrabold text-[#3F362E]">
-                {child.joinedDate || "—"}
+                {formatDate(child.enrolled_at)}
               </span>
             </div>
           </div>
@@ -162,8 +240,8 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
 
           {/* Linked parents */}
           <ParentsSection
-            childName={child.name}
-            initialParents={child.parents ?? []}
+            childName={child.full_name}
+            initialParents={linkedParents}
           />
         </div>
       </div>

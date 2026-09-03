@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Child, allergyLabels, allergyBadgeColors } from "@/app/lib/children";
+import { Child, getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
 
 function ChevronIcon() {
   return (
@@ -51,15 +51,28 @@ export default function ChildCard({ child }: ChildCardProps) {
           {child.age} años · {parentLabel}
         </div>
       </div>
-      {child.allergy ? (
+      {child.allergies && child.allergies.length > 0 ? (
+        child.allergies.map((tag) => (
+          <span
+            key={tag}
+            className="flex-none rounded-full px-[9px] py-[5px] text-[11px] font-extrabold"
+            style={{
+              backgroundColor: getAllergyBadgeColors(tag).bg,
+              color: getAllergyBadgeColors(tag).text,
+            }}
+          >
+            {getAllergyLabel(tag)}
+          </span>
+        ))
+      ) : child.allergy ? (
         <span
           className="flex-none rounded-full px-[9px] py-[5px] text-[11px] font-extrabold"
           style={{
-            backgroundColor: allergyBadgeColors[child.allergy].bg,
-            color: allergyBadgeColors[child.allergy].text,
+            backgroundColor: getAllergyBadgeColors(child.allergy).bg,
+            color: getAllergyBadgeColors(child.allergy).text,
           }}
         >
-          {allergyLabels[child.allergy]}
+          {getAllergyLabel(child.allergy)}
         </span>
       ) : child.linkPrompt ? (
         <span className="flex-none rounded-full bg-[#F9D2DE] px-[9px] py-[5px] text-[11px] font-extrabold text-[#C56486]">

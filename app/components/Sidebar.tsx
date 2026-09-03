@@ -116,8 +116,27 @@ const navItems = [
   { label: "Mi cuenta", href: "#", icon: <UserIcon /> },
 ];
 
-export default function Sidebar() {
+const roleLabels: Record<string, string> = {
+  staff: "Maestra",
+  parent: "Padre",
+  admin: "Admin",
+};
+
+export default function Sidebar({
+  user,
+}: {
+  user?: {
+    full_name: string;
+    role: string;
+    room?: string | null;
+  };
+}) {
   const pathname = usePathname();
+
+  const displayName = user?.full_name || "Caro Giménez";
+  const displayRole = user ? roleLabels[user.role] || user.role : "Maestra";
+  const displayRoom = user?.room || "Soles";
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <aside className="sticky top-0 flex h-screen w-[248px] flex-none flex-col border-r border-[#ECE0D0] bg-[#FFFDF9] px-4 py-6">
@@ -163,13 +182,15 @@ export default function Sidebar() {
       <div className="mt-[10px] border-t border-[#ECE0D0] pt-[14px]">
         <div className="flex items-center gap-[11px] px-2 py-1.5">
           <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full bg-[#F2937A] font-fredoka text-base font-semibold text-white">
-            C
+            {initial}
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-sm font-extrabold text-[#3F362E]">
-              Caro Giménez
+              {displayName}
             </div>
-            <div className="text-xs text-[#A89A8B]">Maestra · Soles</div>
+            <div className="text-xs text-[#A89A8B]">
+              {displayRole} · {displayRoom}
+            </div>
           </div>
           <a
             href="#"
