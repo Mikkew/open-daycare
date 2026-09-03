@@ -140,7 +140,7 @@ export default function ActivatePage() {
         {/* Login link */}
         <p className="mt-[22px] text-center text-[14.5px] text-[#94887B]">
           ¿Ya tenés cuenta?{" "}
-          <Link href="/login" className="font-extrabold text-[#C5503A]">
+          <Link href="/auth/login" className="font-extrabold text-[#C5503A]">
             Iniciar sesión
           </Link>
         </p>
