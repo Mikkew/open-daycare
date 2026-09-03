@@ -1,6 +1,6 @@
 # SPEC 07 — Base de datos: primer día (migraciones + conexión UI)
 
-> **Status:** Aprovado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 02, SPEC 03, SPEC 04, SPEC 05, SPEC 06
 > **Date:** 2026-09-02
 > **Objective:** Crear las tablas core de Supabase con migraciones (DDL + RLS + seed) y conectar las pantallas existentes (`/`, `/kids`, `/kids/[id]`) a datos reales desde la base de datos, eliminando los arrays estáticos mock.
