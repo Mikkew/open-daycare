@@ -3,14 +3,13 @@
 import { useState, useCallback, useEffect } from "react";
 import { LinkedParent } from "@/app/lib/children";
 import ParentRow from "@/app/components/ParentRow";
+import { sendInvitation } from "@/app/actions/invitations";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 type Relation = "Mamá" | "Papá" | "Tutor/a";
 
 const RELATIONS: Relation[] = ["Mamá", "Papá", "Tutor/a"];
-
-const NEW_PARENT_AVATAR_COLOR = "#C9B6E8";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -44,20 +43,24 @@ function generateCode(): string {
 
 interface ParentsSectionProps {
   childName: string;
+  childId: string;
   initialParents: LinkedParent[];
 }
 
 export default function ParentsSection({
   childName,
+  childId,
   initialParents,
 }: ParentsSectionProps) {
-  const [parents, setParents] = useState<LinkedParent[]>(initialParents);
+  const [parents] = useState<LinkedParent[]>(initialParents);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [relation, setRelation] = useState<Relation>("Mamá");
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -94,6 +97,7 @@ export default function ParentsSection({
     setEmail("");
     setRelation("Mamá");
     setErrors({});
+    setServerError("");
   }, []);
 
   const handleClose = useCallback(() => {
@@ -102,9 +106,10 @@ export default function ParentsSection({
     setEmail("");
     setRelation("Mamá");
     setErrors({});
+    setServerError("");
   }, []);
 
-  const handleSend = useCallback(() => {
+  const handleSend = useCallback(async () => {
     const newErrors: { name?: string; email?: string } = {};
 
     if (!name.trim()) {
@@ -122,18 +127,27 @@ export default function ParentsSection({
       return;
     }
 
-    setParents((prev) => [
-      ...prev,
-      {
-        name,
-        relation,
-        status: "pending",
-        avatarColor: NEW_PARENT_AVATAR_COLOR,
-      },
-    ]);
+    setLoading(true);
+    setServerError("");
+
+    const result = await sendInvitation({
+      childId,
+      parentName: name,
+      parentEmail: email,
+      relationship: relation,
+    });
+
+    setLoading(false);
+
+    if (result.error) {
+      setServerError(result.error);
+      return;
+    }
+
+    // Don't add to local state — the real parent will appear after reload
     setErrors({});
     setOpen(false);
-  }, [name, email, relation]);
+  }, [name, email, relation, childId]);
 
   return (
     <>
@@ -335,25 +349,49 @@ export default function ParentsSection({
               </div>
 
               {/* Enviar invitación */}
+              {serverError && (
+                <div className="mb-[16px] rounded-[12px] bg-[#FBDAD6] p-[12px_14px] text-[13.5px] text-[#C5413A]">
+                  {serverError}
+                </div>
+              )}
               <button
                 type="button"
                 onClick={handleSend}
-                className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)]"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-4 py-[14px] text-[15.5px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,0.7)] disabled:opacity-60"
               >
-                <svg
-                  width="19"
-                  height="19"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m22 2-7 20-4-9-9-4z" />
-                  <path d="M22 2 11 13" />
-                </svg>
-                Enviar invitación
+                {loading ? (
+                  <svg
+                    className="h-5 w-5 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="9"
+                      strokeOpacity="0.3"
+                    />
+                    <path d="M21 12a9 9 0 0 0-9-9" strokeLinecap="round" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#fff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m22 2-7 20-4-9-9-4z" />
+                    <path d="M22 2 11 13" />
+                  </svg>
+                )}
+                {loading ? "Enviando..." : "Enviar invitación"}
               </button>
             </div>
           </div>

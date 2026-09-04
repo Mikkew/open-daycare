@@ -258,6 +258,7 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
           {/* Linked parents */}
           <ParentsSection
             childName={child.full_name}
+            childId={child.id}
             initialParents={linkedParents}
           />
         </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { verifyInvitationCode, activateFromInvitation } from "@/app/actions/invitations";
 
 function SunIcon() {
   return (
@@ -52,33 +52,90 @@ function ActivateForm() {
   const [authorized, setAuthorized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(!!invitationCode);
+  const [validInvitation, setValidInvitation] = useState<{
+    childName: string;
+    parentName: string;
+    parentEmail: string;
+    code: string;
+  } | null>(null);
+  const [invitationError, setInvitationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (invitationCode) {
+      verifyInvitationCode(invitationCode).then((result) => {
+        setVerifying(false);
+        if (result.error) {
+          setInvitationError(result.error);
+        } else if (result.success && result.invitation) {
+          setValidInvitation({
+            childName: result.invitation.childName,
+            parentName: result.invitation.parentName,
+            parentEmail: result.invitation.parentEmail,
+            code: result.invitation.code,
+          });
+          setEmail(result.invitation.parentEmail);
+          setCode(result.invitation.code);
+        }
+      });
+    }
+  }, [invitationCode]);
 
   const handleActivate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const supabase = createClient();
+    if (validInvitation) {
+      const result = await activateFromInvitation({
+        code: validInvitation.code,
+        email,
+        password,
+      });
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          invitation_code: code,
-        },
-      },
-    });
-
-    if (signUpError) {
-      setError(signUpError.message);
       setLoading(false);
-      return;
-    }
 
-    router.push("/");
-    router.refresh();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      router.push("/login");
+      router.refresh();
+    } else {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            invitation_code: code,
+          },
+        },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    }
   };
+
+  if (invitationCode && verifying) {
+    return (
+      <div className="w-full max-w-[440px] text-center text-[15px] text-[#94887B]">
+        Verificando código de invitación...
+      </div>
+    );
+  }
+
+  const hasInvitationError = !!invitationCode && !validInvitation && !verifying;
 
   return (
     <div className="w-full max-w-[440px]">
@@ -92,13 +149,37 @@ function ActivateForm() {
         <SunIcon />
       </div>
 
-      <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
-        Bienvenida a OpenDayCare
-      </h1>
-      <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#94887B]">
-        Te invitaron a seguir el día de tu hijo. Creá tu contraseña para
-        activar la cuenta.
-      </p>
+      {validInvitation ? (
+        <>
+          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+            Bienvenida a OpenDayCare
+          </h1>
+          <p className="mb-[4px] text-[15.5px] leading-[1.55] text-[#94887B]">
+            Te invitaron a seguir el día de{" "}
+            <span className="font-bold text-[#3F362E]">{validInvitation.childName}</span>.
+            Creá tu contraseña para activar la cuenta.
+          </p>
+        </>
+      ) : hasInvitationError ? (
+        <>
+          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+            Invitación inválida
+          </h1>
+          <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#C5503A]">
+            {invitationError}
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+            Bienvenida a OpenDayCare
+          </h1>
+          <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#94887B]">
+            Te invitaron a seguir el día de tu hijo. Creá tu contraseña para
+            activar la cuenta.
+          </p>
+        </>
+      )}
 
       <form onSubmit={handleActivate}>
         <div className="mb-[8px] text-[12px] font-bold tracking-[0.7px] text-[#94887B]">
@@ -108,7 +189,14 @@ function ActivateForm() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Ej: 7K4P9"
-          className="mb-[18px] w-full rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-[16px] py-[14px] font-fredoka text-[18px] font-bold tracking-[3px] text-[#3F362E]"
+          readOnly={validInvitation !== null}
+          className={`mb-[18px] w-full rounded-[14px] border-[1.5px] bg-white px-[16px] py-[14px] font-fredoka text-[18px] font-bold tracking-[3px] text-[#3F362E] ${
+            hasInvitationError
+              ? "border-[#D9583C] bg-[#FDE8E4]"
+              : validInvitation
+                ? "border-[#CFEBD8] bg-[#F0FAF3]"
+                : "border-[#EADFD0]"
+          }`}
         />
 
         <div className="mb-[8px] text-[12px] font-bold tracking-[0.7px] text-[#94887B]">
@@ -160,7 +248,7 @@ function ActivateForm() {
 
         <button
           type="submit"
-          disabled={loading || !authorized}
+          disabled={loading || !authorized || hasInvitationError}
           className="block w-full rounded-[15px] px-[15px] py-[15px] text-center text-[16px] font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-60"
           style={{
             background: "linear-gradient(180deg,#F4977E,#EE8164)",
