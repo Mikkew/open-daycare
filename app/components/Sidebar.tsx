@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import CreatePostModal from "./CreatePostModal";
 
 function SunIcon() {
@@ -132,11 +133,19 @@ export default function Sidebar({
   };
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const displayName = user?.full_name || "Caro Giménez";
   const displayRole = user ? roleLabels[user.role] || user.role : "Maestra";
   const displayRoom = user?.room || "Soles";
   const initial = displayName.charAt(0).toUpperCase();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="sticky top-0 flex h-screen w-[248px] flex-none flex-col border-r border-[#ECE0D0] bg-[#FFFDF9] px-4 py-6">
@@ -192,13 +201,13 @@ export default function Sidebar({
               {displayRole} · {displayRoom}
             </div>
           </div>
-          <a
-            href="#"
+          <button
+            onClick={handleLogout}
             title="Cerrar sesión"
-            className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-[#F6ECDF] text-[#94887B]"
+            className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-[#F6ECDF] text-[#94887B] cursor-pointer"
           >
             <LogoutIcon />
-          </a>
+          </button>
         </div>
       </div>
     </aside>
