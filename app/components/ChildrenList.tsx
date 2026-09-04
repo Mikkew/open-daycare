@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ChildCard from "@/app/components/ChildCard";
 import type { AllergyTag } from "@/app/lib/children";
 
@@ -43,10 +44,28 @@ interface ChildData {
 
 export default function ChildrenList({ kids }: { kids: ChildData[] }) {
   const [query, setQuery] = useState("");
+  const router = useRouter();
+
+  const handleArchived = () => {
+    router.refresh();
+  };
 
   const filtered = kids.filter((child) =>
     child.name.toLowerCase().includes(query.toLowerCase())
   );
+
+  const grouped: Record<string, ChildData[]> = {};
+  for (const child of filtered) {
+    const room = child.room || "Sin sala";
+    if (!grouped[room]) grouped[room] = [];
+    grouped[room].push(child);
+  }
+
+  const sortedRoomNames = Object.keys(grouped).sort((a, b) => a.localeCompare(b, "es"));
+
+  for (const roomName of sortedRoomNames) {
+    grouped[roomName].sort((a, b) => a.name.localeCompare(b.name, "es"));
+  }
 
   return (
     <>
@@ -60,39 +79,59 @@ export default function ChildrenList({ kids }: { kids: ChildData[] }) {
         />
       </div>
 
-      <div className="mb-[14px] flex items-center gap-3">
-        <span className="text-[12.5px] font-extrabold tracking-wide text-[#3F362E]">
-          SALA SOLES
-        </span>
-        <span className="text-[13px] text-[#A89A8B]">
-          {filtered.length} {filtered.length === 1 ? "niño" : "niños"}
-        </span>
-        <span className="flex-1 h-[1px] bg-[#E7DAC8]" />
-      </div>
+      {sortedRoomNames.map((roomName) => {
+        const roomKids = grouped[roomName];
+        if (roomKids.length === 0) return null;
+        return (
+          <div key={roomName} className="mb-6 last:mb-0">
+            <div className="mb-[14px] flex items-center gap-3">
+              <span className="text-[12.5px] font-extrabold tracking-wide text-[#3F362E]">
+                SALA {roomName.toUpperCase()}
+              </span>
+              <span className="text-[13px] text-[#A89A8B]">
+                {roomKids.length} {roomKids.length === 1 ? "niño" : "niños"}
+              </span>
+              <span className="flex-1 h-[1px] bg-[#E7DAC8]" />
+            </div>
+            <div className="grid grid-cols-2 gap-[14px]">
+              {roomKids.map((child, i) => {
+                const colors = avatarColors[i % avatarColors.length];
+                const age = calculateAge(child.birthDate);
+                const isLinked = child.parentsCount === 0;
+                return (
+                  <ChildCard
+                    key={child.id}
+                    child={{
+                      id: child.id,
+                      name: child.name,
+                      age,
+                      room: child.room,
+                      parentsCount: child.parentsCount,
+                      allergies: child.allergies as AllergyTag[],
+                      linkPrompt: isLinked,
+                      avatarColor: colors.bg,
+                      avatarText: colors.text,
+                    }}
+                    onArchived={handleArchived}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
 
-      <div className="grid grid-cols-2 gap-[14px]">
-        {filtered.map((child, i) => {
-          const colors = avatarColors[i % avatarColors.length];
-          const age = calculateAge(child.birthDate);
-          const isLinked = child.parentsCount === 0;
-          return (
-            <ChildCard
-              key={child.id}
-              child={{
-                id: child.id,
-                name: child.name,
-                age,
-                room: child.room,
-                parentsCount: child.parentsCount,
-                allergies: child.allergies as AllergyTag[],
-                linkPrompt: isLinked,
-                avatarColor: colors.bg,
-                avatarText: colors.text,
-              }}
-            />
-          );
-        })}
-      </div>
+      {sortedRoomNames.length === 0 && filtered.length === 0 && kids.length > 0 && query && (
+        <p className="py-8 text-center text-[14px] text-[#A89A8B]">
+          No se encontraron niños con &quot;{query}&quot;
+        </p>
+      )}
+
+      {kids.length === 0 && (
+        <p className="py-8 text-center text-[14px] text-[#A89A8B]">
+          No hay niños activos aún.
+        </p>
+      )}
     </>
   );
 }

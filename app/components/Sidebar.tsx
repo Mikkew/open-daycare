@@ -58,6 +58,23 @@ function KidsIcon() {
   );
 }
 
+function RoomsIcon() {
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 3h18v14H3zM3 10h18M9 3v14M15 3v14" />
+    </svg>
+  );
+}
+
 function BellIcon() {
   return (
     <svg
@@ -113,6 +130,7 @@ function LogoutIcon() {
 const navItems = [
   { label: "Feed", href: "/", icon: <HomeIcon /> },
   { label: "Niños", href: "/kids", icon: <KidsIcon /> },
+  { label: "Salas", href: "/rooms", icon: <RoomsIcon /> },
   { label: "Avisos", href: "#", icon: <BellIcon /> },
   { label: "Mi cuenta", href: "#", icon: <UserIcon /> },
 ];
@@ -169,7 +187,8 @@ export default function Sidebar({
             item.href !== "#" &&
             (pathname === item.href ||
               (item.href === "/" && pathname === "/") ||
-              (item.href === "/kids" && pathname?.startsWith("/kids")));
+              (item.href === "/kids" && pathname?.startsWith("/kids")) ||
+              (item.href === "/rooms" && pathname?.startsWith("/rooms")));
 
           return (
             <a

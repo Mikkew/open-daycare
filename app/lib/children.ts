@@ -58,5 +58,4 @@ export const parentStatusBadgeColors: Record<ParentStatus, { bg: string; text: s
   pending: { bg: "#F7E7A6", text: "#9A7B1E" },
 };
 
-// UI constant for mock modals (SPEC 04/05/06) — actual rooms come from DB
-export const rooms: string[] = ["Soles", "Lunas", "Estrellas"];
+// Rooms come from DB — use getRooms() from "@/lib/rooms"

@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getServerClient } from "@/lib/supabase/server";
+import { getRooms } from "@/lib/rooms";
 import ParentsSection from "@/app/components/ParentsSection";
 import { getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
 import type { AllergyTag } from "@/app/lib/children";
+import EditChildModal from "@/app/components/EditChildModal";
+import ArchiveButton from "@/app/components/ArchiveChildButton";
 
 function ArrowLeftIcon() {
   return (
@@ -90,28 +93,34 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
   const { id } = await params;
   const supabase = await getServerClient();
 
-  const { data: child, error } = await supabase
-    .from("children")
-    .select(
-      `
-      id,
-      full_name,
-      birth_date,
-      enrolled_at,
-      medical_notes,
-      photo_consent,
-      status,
-      rooms (name),
-      child_allergy_tags (tag),
-      parent_children (
+  const [childResult, rooms] = await Promise.all([
+    supabase
+      .from("children")
+      .select(
+        `
         id,
-        relationship,
-        users!parent_children_parent_id_fkey (id, full_name, role, status)
+        full_name,
+        birth_date,
+        enrolled_at,
+        room_id,
+        medical_notes,
+        photo_consent,
+        status,
+        rooms (name),
+        child_allergy_tags (tag),
+        parent_children (
+          id,
+          relationship,
+          users!parent_children_parent_id_fkey (id, full_name, role, status)
+        )
+      `
       )
-    `
-    )
-    .eq("id", id)
-    .single();
+      .eq("id", id)
+      .single(),
+    getRooms(),
+  ]);
+
+  const { data: child, error } = childResult;
 
   if (error || !child) {
     notFound();
@@ -159,12 +168,20 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
                 {age} años · Sala {child.rooms?.name || ""}
               </p>
             </div>
-            <a
-              href="#"
-              className="rounded-[12px] border-[1.5px] border-[#ECE0D0] bg-[#FFFDF9] px-4 py-[9px] text-[14px] font-bold text-[#6E6359]"
-            >
-              Editar
-            </a>
+            <EditChildModal
+              child={{
+                id: child.id,
+                fullName: child.full_name,
+                birthDate: child.birth_date,
+                roomId: child.room_id,
+                medicalNotes: child.medical_notes,
+                allergies: child.child_allergy_tags?.map((t: { tag: string }) => t.tag as string) || [],
+              }}
+              rooms={rooms}
+            />
+            <ArchiveButton
+              childId={child.id}
+            />
           </div>
 
           {/* Allergy badges */}
