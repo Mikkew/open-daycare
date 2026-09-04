@@ -2,14 +2,21 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { Room } from "@/lib/rooms";
-import { addChild } from "@/app/actions/children";
+import { updateChild } from "@/app/actions/children";
 
-interface AddChildModalProps {
+interface EditChildModalProps {
+  child: {
+    id: string;
+    fullName: string;
+    birthDate: string;
+    roomId: string | null;
+    medicalNotes: string | null;
+    allergies: string[];
+  };
   rooms: Room[];
+  onUpdated?: () => void;
   onError?: (message: string) => void;
 }
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function capitalizeWords(s: string): string {
   const endsWithSpace = s.endsWith(" ");
@@ -60,15 +67,21 @@ function formatDateMask(raw: string): string {
   return result;
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
+function isoToDdmmyyyy(iso: string): string {
+  const d = new Date(iso);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = String(d.getFullYear());
+  return `${dd}/${mm}/${yyyy}`;
+}
 
-export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
+export default function EditChildModal({ child, rooms, onUpdated, onError }: EditChildModalProps) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [room, setRoom] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [notes, setNotes] = useState("");
+  const [name, setName] = useState(child.fullName);
+  const [birthDate, setBirthDate] = useState(isoToDdmmyyyy(child.birthDate));
+  const [room, setRoom] = useState(child.roomId || "");
+  const [allergies, setAllergies] = useState(child.allergies.join(", "));
+  const [notes, setNotes] = useState(child.medicalNotes || "");
   const [errors, setErrors] = useState<{
     name?: string;
     birthDate?: string;
@@ -78,7 +91,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -151,7 +163,8 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
     setSaveError(null);
 
     try {
-      await addChild({
+      await updateChild({
+        childId: child.id,
         fullName: name.trim(),
         birthDate,
         roomId: room,
@@ -161,11 +174,7 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
 
       setErrors({});
       setOpen(false);
-      setName("");
-      setBirthDate("");
-      setRoom("");
-      setAllergies("");
-      setNotes("");
+      onUpdated?.();
     } catch (e) {
       const message = e instanceof Error ? e.message : "Error al guardar";
       setSaveError(message);
@@ -173,48 +182,40 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
     } finally {
       setSaving(false);
     }
-  }, [name, birthDate, room, allergies, notes, onError]);
+  }, [child.id, name, birthDate, room, allergies, notes, onUpdated, onError]);
 
   const handleCancel = useCallback(() => {
     setOpen(false);
     setErrors({});
     setSaveError(null);
-    setName("");
-    setBirthDate("");
-    setRoom("");
-    setAllergies("");
-    setNotes("");
-  }, []);
+    setName(child.fullName);
+    setBirthDate(isoToDdmmyyyy(child.birthDate));
+    setRoom(child.roomId || "");
+    setAllergies(child.allergies.join(", "));
+    setNotes(child.medicalNotes || "");
+  }, [child]);
 
   const handleOpen = useCallback(() => {
     setOpen(true);
     setErrors({});
-  }, []);
+    setSaveError(null);
+    setName(child.fullName);
+    setBirthDate(isoToDdmmyyyy(child.birthDate));
+    setRoom(child.roomId || "");
+    setAllergies(child.allergies.join(", "));
+    setNotes(child.medicalNotes || "");
+  }, [child]);
 
   return (
     <>
-      {/* Trigger button */}
       <button
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-[18px] py-[11px] text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.7)]"
+        className="rounded-[12px] border-[1.5px] border-[#ECE0D0] bg-[#FFFDF9] px-4 py-[9px] text-[14px] font-bold text-[#6E6359]"
       >
-        <svg
-          width="17"
-          height="17"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Agregar niño
+        Editar
       </button>
 
-      {/* Overlay */}
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 px-6 py-10"
@@ -226,7 +227,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
             ref={modalRef}
             className="w-full max-w-[520px] overflow-hidden rounded-[24px] border border-[#ECE0D0] bg-[#FBF4EC] shadow-[0_20px_50px_-24px_rgba(63,54,46,0.35)]"
           >
-            {/* Header */}
             <div className="flex items-center justify-between border-b border-[#ECE0D0] px-[26px] py-[20px]">
               <button
                 type="button"
@@ -236,7 +236,7 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
                 Cancelar
               </button>
               <span className="font-fredoka text-[18px] font-semibold text-[#3F362E]">
-                Agregar niño
+                Editar niño
               </span>
               <button
                 type="button"
@@ -248,7 +248,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
               </button>
             </div>
 
-            {/* Form fields */}
             <div className="px-[26px] py-[24px]">
               {saveError && (
                 <p className="mb-[18px] rounded-[10px] border border-[#D9583C] bg-[#FFF3F0] px-4 py-3 text-sm text-[#D9583C]">
@@ -256,7 +255,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
                 </p>
               )}
 
-              {/* Nombre completo */}
               <label className="mb-2 block text-[12px] font-extrabold tracking-[0.7px] text-[#94887B]">
                 NOMBRE COMPLETO
               </label>
@@ -278,7 +276,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
                 </p>
               )}
 
-              {/* Fecha de nacimiento + Sala */}
               <div className="mb-[18px] flex gap-[14px]">
                 <div className="flex-1">
                   <label className="mb-2 block text-[12px] font-extrabold tracking-[0.7px] text-[#94887B]">
@@ -350,7 +347,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
                 </div>
               </div>
 
-              {/* Alergias */}
               <label className="mb-2 block text-[12px] font-extrabold tracking-[0.7px] text-[#94887B]">
                 ALERGIAS (ETIQUETAS)
               </label>
@@ -363,7 +359,6 @@ export default function AddChildModal({ rooms, onError }: AddChildModalProps) {
                 className="mb-[18px] w-full rounded-[14px] border border-[#EADFD0] bg-white px-4 py-[13px] text-[15px] text-[#3F362E] placeholder:text-[#B6A99B]"
               />
 
-              {/* Notas médicas */}
               <label className="mb-2 block text-[12px] font-extrabold tracking-[0.7px] text-[#94887B]">
                 NOTAS MÉDICAS
               </label>

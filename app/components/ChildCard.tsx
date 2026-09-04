@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Child, getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
+import ChildActions from "@/app/components/ChildActions";
 
 function ChevronIcon() {
   return (
@@ -20,9 +23,10 @@ function ChevronIcon() {
 
 interface ChildCardProps {
   child: Child;
+  onArchived?: () => void;
 }
 
-export default function ChildCard({ child }: ChildCardProps) {
+export default function ChildCard({ child, onArchived }: ChildCardProps) {
   const parentLabel =
     child.parentsCount === 0
       ? "sin padres vinculados"
@@ -33,24 +37,26 @@ export default function ChildCard({ child }: ChildCardProps) {
   const initial = child.name.charAt(0);
 
   return (
-    <Link
-      href={`/kids/${child.id}`}
-      className="flex min-w-0 items-center gap-[14px] rounded-[18px] border border-[#ECE0D0] bg-[#FFFDF9] p-4 shadow-[0_4px_14px_-12px_rgba(120,90,60,0.5)] transition-all duration-150 hover:border-[#F2A78E] hover:-translate-y-0.5"
-    >
-      <div
-        className="flex h-[48px] w-[48px] flex-none items-center justify-center rounded-full font-fredoka text-[19px] font-semibold"
-        style={{ backgroundColor: child.avatarColor, color: child.avatarText }}
+    <div className="group relative flex min-w-0 items-center gap-[14px] rounded-[18px] border border-[#ECE0D0] bg-[#FFFDF9] p-4 shadow-[0_4px_14px_-12px_rgba(120,90,60,0.5)] transition-all duration-150 hover:border-[#F2A78E] hover:-translate-y-0.5">
+      <Link
+        href={`/kids/${child.id}`}
+        className="flex min-w-0 flex-1 items-center gap-[14px]"
       >
-        {initial}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="font-fredoka text-[16px] font-semibold text-[#3F362E]">
-          {child.name}
+        <div
+          className="flex h-[48px] w-[48px] flex-none items-center justify-center rounded-full font-fredoka text-[19px] font-semibold"
+          style={{ backgroundColor: child.avatarColor, color: child.avatarText }}
+        >
+          {initial}
         </div>
-        <div className="text-[13px] text-[#A89A8B]">
-          {child.age} años · {parentLabel}
+        <div className="min-w-0 flex-1">
+          <div className="font-fredoka text-[16px] font-semibold text-[#3F362E]">
+            {child.name}
+          </div>
+          <div className="text-[13px] text-[#A89A8B]">
+            {child.age} años · {parentLabel}
+          </div>
         </div>
-      </div>
+      </Link>
       {child.allergies && child.allergies.length > 0 ? (
         child.allergies.map((tag) => (
           <span
@@ -81,6 +87,13 @@ export default function ChildCard({ child }: ChildCardProps) {
       ) : (
         <ChevronIcon />
       )}
-    </Link>
+      <div className="flex-none">
+        <ChildActions
+          childId={child.id}
+          childName={child.name}
+          onArchived={onArchived}
+        />
+      </div>
+    </div>
   );
 }

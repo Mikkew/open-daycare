@@ -1,27 +1,33 @@
 import { getServerClient } from "@/lib/supabase/server";
+import { getRooms } from "@/lib/rooms";
 import ChildrenList from "@/app/components/ChildrenList";
 import AddChildModal from "@/app/components/AddChildModal";
 
 export default async function KidsPage() {
   const supabase = await getServerClient();
 
-  const { data: children, error } = await supabase
-    .from("children")
-    .select(
+  const [childrenResult, rooms] = await Promise.all([
+    supabase
+      .from("children")
+      .select(
+        `
+        id,
+        full_name,
+        birth_date,
+        enrolled_at,
+        room_id,
+        status,
+        rooms (name),
+        child_allergy_tags (tag),
+        parent_children (id)
       `
-      id,
-      full_name,
-      birth_date,
-      enrolled_at,
-      room_id,
-      status,
-      rooms (name),
-      child_allergy_tags (tag),
-      parent_children (id)
-    `
-    )
-    .eq("status", "active")
-    .order("full_name", { ascending: true });
+      )
+      .eq("status", "active")
+      .order("full_name", { ascending: true }),
+    getRooms(),
+  ]);
+
+  const { data: children, error } = childrenResult;
 
   if (error) {
     console.error("Error fetching children:", error);
@@ -31,6 +37,7 @@ export default async function KidsPage() {
     id: child.id,
     name: child.full_name,
     room: child.rooms?.name || "",
+    roomId: child.room_id,
     birthDate: child.birth_date,
     enrolledAt: child.enrolled_at,
     allergies: child.child_allergy_tags?.map((t: { tag: string }) => t.tag) || [],
@@ -48,7 +55,7 @@ export default async function KidsPage() {
             Niños
           </h1>
         </div>
-        <AddChildModal />
+        <AddChildModal rooms={rooms} />
       </div>
 
       <ChildrenList kids={mappedChildren} />
