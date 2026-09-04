@@ -100,6 +100,53 @@ export type Database = {
         }
         Relationships: []
       }
+      invitations: {
+        Row: {
+          child_id: string
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          parent_email: string
+          parent_name: string
+          relationship: Database["public"]["Enums"]["relationship_type"]
+          status: string
+          used_at: string | null
+        }
+        Insert: {
+          child_id: string
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email: string
+          parent_name: string
+          relationship: Database["public"]["Enums"]["relationship_type"]
+          status?: string
+          used_at?: string | null
+        }
+        Update: {
+          child_id?: string
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email?: string
+          parent_name?: string
+          relationship?: Database["public"]["Enums"]["relationship_type"]
+          status?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_children: {
         Row: {
           child_id: string
