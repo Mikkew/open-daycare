@@ -85,7 +85,7 @@ export async function sendInvitation(data: {
     const activationUrl = `${appUrl}/activate?code=${code}`;
 
     try {
-      await sendInvitationEmail(data.parentEmail, code, activationUrl);
+      await sendInvitationEmail(data.parentEmail, code, activationUrl, `${data.parentName} (${data.parentEmail})`);
     } catch (emailError) {
       console.error("Failed to send invitation email:", emailError);
       // Don't fail the whole operation if email fails — invitation is stored
