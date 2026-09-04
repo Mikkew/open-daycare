@@ -1,9 +1,9 @@
 "use server";
 
-import { getServerClient } from "@/lib/supabase/server";
+import { getServerActionClient } from "@/lib/supabase/server";
 
 export async function createRoom(name: string) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { data: daycare } = await supabase.rpc("get_current_user_daycare_id");
 
@@ -20,7 +20,7 @@ export async function createRoom(name: string) {
 }
 
 export async function renameRoom(roomId: string, name: string) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { error } = await supabase
     .from("rooms")
@@ -31,7 +31,7 @@ export async function renameRoom(roomId: string, name: string) {
 }
 
 export async function deleteRoom(roomId: string) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { count, error: countError } = await supabase
     .from("children")

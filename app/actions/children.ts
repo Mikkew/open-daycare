@@ -1,6 +1,6 @@
 "use server";
 
-import { getServerClient } from "@/lib/supabase/server";
+import { getServerActionClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 const allergyMap: Record<string, string> = {
@@ -21,7 +21,7 @@ export async function addChild(data: {
   allergies: string;
   medicalNotes: string;
 }) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { data: child, error: childError } = await supabase
     .from("children")
@@ -67,7 +67,7 @@ export async function updateChild(data: {
   allergies: string;
   medicalNotes: string;
 }) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { error: childError } = await supabase
     .from("children")
@@ -107,7 +107,7 @@ export async function updateChild(data: {
 }
 
 export async function archiveChild(childId: string) {
-  const supabase = await getServerClient();
+  const supabase = await getServerActionClient();
 
   const { error } = await supabase
     .from("children")
