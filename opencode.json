@@ -1,10 +1,23 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "lsp": true,
+  "formatter": true,
   "command": {
     "spec": {
       "description": "Crea especificaciones de pantallas y funcionalidades",
       "template": "Carga y sigue la skill spec en .agents/skills/spec/SKILL.md.\n\nFeature: $ARGUMENTS"
+    },
+    "accessibility-checker": {
+      "description": "Revisa accesibilidad WCAG 2.2 AA en archivos o páginas",
+      "template": "Carga y sigue la skill accessibility-checker en .agents/agents/accessibility-checker/SKILL.md.\n\nTarget: $ARGUMENTS"
+    },
+    "react-best-practices": {
+      "description": "Revisa y refactoriza componentes React 19 + Next.js 16",
+      "template": "Carga y sigue la skill react-best-practices en .opencode/agents/react-best-practices.md.\n\nTarget: $ARGUMENTS"
+    },
+    "db-security-auditor": {
+      "description": "Audita seguridad de base de datos Supabase y previene fugas de datos",
+      "template": "Carga y sigue el agente db-security-auditor en .opencode/agents/db-security-auditor.md.\n\nTarget: $ARGUMENTS"
     }
   },
   "references": {
@@ -14,6 +27,7 @@
     }
   },
   "permission": {
+    "edit": { ".opencode/agents/*.md": "allow" },
     "external_directory": {
       "/tmp/**": "allow"
     },

@@ -1,5 +1,6 @@
 import { getServerClient } from "@/lib/supabase/server";
 import PostCard from "@/app/components/PostCard";
+import Counter from "@/app/components/Counter";
 import type { Post } from "@/app/lib/feed";
 
 const postTypeToKind: Record<string, Post["kind"]> = {
@@ -78,6 +79,10 @@ export default async function Home() {
         <p className="mt-[5px] text-[14.5px] text-[#94887B]">
           12 niños · martes 17 jun
         </p>
+      </div>
+
+      <div className="mb-6">
+        <Counter />
       </div>
 
       <a
