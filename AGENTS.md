@@ -58,4 +58,7 @@ Bundled skills (see `skills-lock.json`):
 
 ## Agents
 
+- `db-migrator`: Verifies, applies, and manages Supabase database migrations. Runs automatically on session start to ensure the database is up to date. Handles migration creation, application, rollback, and validation.
+- `react-best-practices`: Reviews and refactors React components to follow React 19 and Next.js 16 best practices. Uses Context7 to verify against official React documentation. Use when reviewing, refactoring, or auditing React components for correctness, performance, and modern patterns.
 - `spec-verifier`: Verifies acceptance criteria of a spec file. Reviews implementation against each criterion, fixes code/spec issues found, and marks checkboxes. Uses Playwright MCP with vision to compare screenshots against references, and Context7 MCP to validate Next.js best practices.
+- `accessibility-checker`: Reviews code files and running pages for WCAG 2.2 AA accessibility compliance. Checks semantic HTML, ARIA attributes, color contrast, keyboard navigation, form labels, and more. Use when reviewing components for accessibility issues.

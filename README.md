@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Development — Test Users
+
+The database includes pre-seeded test users for local development:
+
+| Role | Email | Password |
+|------|-------|----------|
+| Staff | `caro@guarderia.com` | `Test1234!` |
+| Admin | `admin@guarderia.com` | `Test1234!` |
+
+Both users are linked to the daycare "Guardería Sala Soles" and have confirmed emails.
+**Never use these credentials in production.**

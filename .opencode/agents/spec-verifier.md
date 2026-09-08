@@ -1,6 +1,6 @@
 ---
 description: Verifies the "Acceptance criteria" of a spec file. Checks Next.js recommendations via Context7, validates rendered screens with Playwright (visual screenshot comparison), fixes failures, and marks checkboxes. Use when a spec is implemented and its acceptance criteria need to be verified.
-mode: all
+mode: subagent
 model: opencode-go/qwen3.6-plus
 temperature: 0
 permission:

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { verifyInvitationCode, activateFromInvitation } from "@/app/actions/invitations";
 
-function SunIcon() {
+const SunIcon = () => {
   return (
     <svg
       width="30"
@@ -23,7 +23,7 @@ function SunIcon() {
   );
 }
 
-function CheckIcon() {
+const CheckIcon = () => {
   return (
     <svg
       width="15"
@@ -40,7 +40,7 @@ function CheckIcon() {
   );
 }
 
-function ActivateForm() {
+const ActivateForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get("email") || "";
@@ -136,6 +136,52 @@ function ActivateForm() {
   }
 
   const hasInvitationError = !!invitationCode && !validInvitation && !verifying;
+  let invitationContent;
+
+  if (validInvitation) {
+    invitationContent = (
+      <>
+        <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+          Bienvenida a OpenDayCare
+        </h1>
+        <p className="mb-[4px] text-[15.5px] leading-[1.55] text-[#94887B]">
+          Te invitaron a seguir el día de{" "}
+          <span className="font-bold text-[#3F362E]">{validInvitation.childName}</span>.
+          Creá tu contraseña para activar la cuenta.
+        </p>
+      </>
+    );
+  } else if (hasInvitationError) {
+    invitationContent = (
+      <>
+        <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+          Invitación inválida
+        </h1>
+        <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#C5503A]">
+          {invitationError}
+        </p>
+      </>
+    );
+  } else {
+    invitationContent = (
+      <>
+        <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
+          Bienvenida a OpenDayCare
+        </h1>
+        <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#94887B]">
+          Te invitaron a seguir el día de tu hijo. Creá tu contraseña para
+          activar la cuenta.
+        </p>
+      </>
+    );
+  }
+
+  let invitationInputClass = "border-[#EADFD0]";
+  if (hasInvitationError) {
+    invitationInputClass = "border-[#D9583C] bg-[#FDE8E4]";
+  } else if (validInvitation) {
+    invitationInputClass = "border-[#CFEBD8] bg-[#F0FAF3]";
+  }
 
   return (
     <div className="w-full max-w-[440px]">
@@ -149,37 +195,7 @@ function ActivateForm() {
         <SunIcon />
       </div>
 
-      {validInvitation ? (
-        <>
-          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
-            Bienvenida a OpenDayCare
-          </h1>
-          <p className="mb-[4px] text-[15.5px] leading-[1.55] text-[#94887B]">
-            Te invitaron a seguir el día de{" "}
-            <span className="font-bold text-[#3F362E]">{validInvitation.childName}</span>.
-            Creá tu contraseña para activar la cuenta.
-          </p>
-        </>
-      ) : hasInvitationError ? (
-        <>
-          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
-            Invitación inválida
-          </h1>
-          <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#C5503A]">
-            {invitationError}
-          </p>
-        </>
-      ) : (
-        <>
-          <h1 className="mb-[8px] font-fredoka text-[32px] font-semibold leading-[1.15] text-[#3F362E]">
-            Bienvenida a OpenDayCare
-          </h1>
-          <p className="mb-[26px] text-[15.5px] leading-[1.55] text-[#94887B]">
-            Te invitaron a seguir el día de tu hijo. Creá tu contraseña para
-            activar la cuenta.
-          </p>
-        </>
-      )}
+      {invitationContent}
 
       <form onSubmit={handleActivate}>
         <div className="mb-[8px] text-[12px] font-bold tracking-[0.7px] text-[#94887B]">
@@ -190,13 +206,7 @@ function ActivateForm() {
           onChange={(e) => setCode(e.target.value)}
           placeholder="Ej: 7K4P9"
           readOnly={validInvitation !== null}
-          className={`mb-[18px] w-full rounded-[14px] border-[1.5px] bg-white px-[16px] py-[14px] font-fredoka text-[18px] font-bold tracking-[3px] text-[#3F362E] ${
-            hasInvitationError
-              ? "border-[#D9583C] bg-[#FDE8E4]"
-              : validInvitation
-                ? "border-[#CFEBD8] bg-[#F0FAF3]"
-                : "border-[#EADFD0]"
-          }`}
+          className={`mb-[18px] w-full rounded-[14px] border-[1.5px] bg-white px-[16px] py-[14px] font-fredoka text-[18px] font-bold tracking-[3px] text-[#3F362E] ${invitationInputClass}`}
         />
 
         <div className="mb-[8px] text-[12px] font-bold tracking-[0.7px] text-[#94887B]">
@@ -226,8 +236,13 @@ function ActivateForm() {
         <label
           className="mb-[24px] flex cursor-pointer items-start gap-[12px] rounded-[14px] px-[16px] py-[14px]"
           style={{ background: "#FBF1D6" }}
-          onClick={() => setAuthorized(!authorized)}
         >
+          <input
+            type="checkbox"
+            checked={authorized}
+            onChange={(e) => setAuthorized(e.target.checked)}
+            className="sr-only"
+          />
           <span
             className="mt-[1px] flex h-[24px] w-[24px] flex-none items-center justify-center rounded-[8px]"
             style={{ background: authorized ? "#5FB97E" : "#EADFD0" }}
