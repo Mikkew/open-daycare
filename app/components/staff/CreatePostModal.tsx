@@ -1,23 +1,17 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { createPost } from "@/app/actions/posts";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
-// ─── Data ───────────────────────────────────────────────────────────────────
-
-type Recipient = {
+type ChildRecipient = {
   id: string;
   label: string;
   avatarColor?: string;
   avatarText?: string;
   initial?: string;
 };
-
-const RECIPIENTS: Recipient[] = [
-  { id: "mateo", label: "Mateo", avatarColor: "#A9D9E8", avatarText: "#1F7A93", initial: "M" },
-  { id: "sofia", label: "Sofía", avatarColor: "#F4B8CC", avatarText: "#C44A7A", initial: "S" },
-  { id: "benjamin", label: "Benjamín", avatarColor: "#B9DEC4", avatarText: "#3E8B62", initial: "B" },
-  { id: "toda-la-sala", label: "Toda la sala" },
-];
 
 type PostType = { id: string; label: string; bg: string; text: string };
 
@@ -29,6 +23,15 @@ const POST_TYPES: PostType[] = [
   { id: "animo", label: "Ánimo", bg: "#F9D2DE", text: "#C56486" },
   { id: "foto", label: "Foto", bg: "#FBD8CC", text: "#D9684A" },
   { id: "anuncio", label: "Anuncio", bg: "#CCD8F4", text: "#4E72C8" },
+];
+
+const AVATAR_COLORS = [
+  { bg: "#A9D9E8", text: "#1F7A93" },
+  { bg: "#F4B8CC", text: "#C44A7A" },
+  { bg: "#B9DEC4", text: "#3E8B62" },
+  { bg: "#F9D2DE", text: "#C56486" },
+  { bg: "#CCD8F4", text: "#4E72C8" },
+  { bg: "#FBD8CC", text: "#D9684A" },
 ];
 
 function PlusIcon() {
@@ -50,18 +53,60 @@ function PlusIcon() {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function CreatePostModal() {
-  const [open, setOpen] = useState(false);
+interface CreatePostModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export default function CreatePostModal({
+  open: controlledOpen,
+  onOpenChange,
+}: CreatePostModalProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const router = useRouter();
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange
+    ? (value: boolean) => onOpenChange(value)
+    : (value: boolean) => setInternalOpen(value);
+
   const [recipientId, setRecipientId] = useState("");
   const [typeId, setTypeId] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [childRecipients, setChildRecipients] = useState<ChildRecipient[]>([]);
   const [errors, setErrors] = useState<{
     recipient?: string;
     type?: string;
     description?: string;
   }>({});
 
-  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (!open) return;
+    
+    async function fetchChildren() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("children")
+        .select("id, full_name")
+        .eq("status", "active")
+        .order("full_name");
+
+      if (data) {
+        const mapped = data.map((c, i) => ({
+          id: c.id,
+          label: c.full_name.split(" ")[0],
+          avatarColor: AVATAR_COLORS[i % AVATAR_COLORS.length].bg,
+          avatarText: AVATAR_COLORS[i % AVATAR_COLORS.length].text,
+          initial: c.full_name.charAt(0).toUpperCase(),
+        }));
+        setChildRecipients([...mapped, { id: "toda-la-sala", label: "Toda la sala" }]);
+      }
+    }
+
+    fetchChildren();
+  }, [open]);
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -76,7 +121,7 @@ export default function CreatePostModal() {
   const handleOpen = useCallback(() => {
     setOpen(true);
     setErrors({});
-  }, []);
+  }, [setOpen]);
 
   const handleCancel = useCallback(() => {
     setOpen(false);
@@ -84,9 +129,10 @@ export default function CreatePostModal() {
     setRecipientId("");
     setTypeId("");
     setDescription("");
-  }, []);
+    setChildRecipients([]);
+  }, [setOpen]);
 
-  const handlePublish = useCallback(() => {
+  const handlePublish = useCallback(async () => {
     const newErrors: typeof errors = {};
 
     if (!recipientId) {
@@ -106,25 +152,29 @@ export default function CreatePostModal() {
       return;
     }
 
-    setErrors({});
-    setOpen(false);
-    setRecipientId("");
-    setTypeId("");
-    setDescription("");
-  }, [recipientId, typeId, description]);
+    setIsSubmitting(true);
+    try {
+      await createPost({ recipientId, typeId, description });
+      setErrors({});
+      setOpen(false);
+      setRecipientId("");
+      setTypeId("");
+      setDescription("");
+      setChildRecipients([]);
+      router.refresh();
+    } catch (e) {
+      setErrors({ description: "Error al publicar. Intentá de nuevo." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [recipientId, typeId, description, setOpen]);
+
+  const recipients: ChildRecipient[] = childRecipients.length > 0
+    ? childRecipients
+    : [];
 
   return (
     <>
-      {/* Trigger button */}
-      <button
-        type="button"
-        onClick={handleOpen}
-        className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] px-3 py-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,0.75)]"
-      >
-        <PlusIcon />
-        Nueva publicación
-      </button>
-
       {/* Overlay */}
       {open && (
         <div
@@ -149,9 +199,10 @@ export default function CreatePostModal() {
               <button
                 type="button"
                 onClick={handlePublish}
-                className="text-[15px] font-extrabold text-[#D9583C]"
+                disabled={isSubmitting}
+                className="text-[15px] font-extrabold text-[#D9583C] disabled:opacity-50"
               >
-                Publicar
+                {isSubmitting ? "Publicando..." : "Publicar"}
               </button>
             </div>
 
@@ -162,7 +213,7 @@ export default function CreatePostModal() {
                 PARA
               </div>
               <div className="mb-[22px] flex flex-wrap gap-[9px]">
-                {RECIPIENTS.map((r) => {
+                {recipients.map((r) => {
                   const active = recipientId === r.id;
                   return (
                     <button
@@ -171,7 +222,10 @@ export default function CreatePostModal() {
                       onClick={() => {
                         setRecipientId(r.id);
                         if (errors.recipient) {
-                          setErrors((prev) => ({ ...prev, recipient: undefined }));
+                          setErrors((prev) => ({
+                            ...prev,
+                            recipient: undefined,
+                          }));
                         }
                       }}
                       style={{
@@ -185,7 +239,10 @@ export default function CreatePostModal() {
                     >
                       {r.avatarColor && (
                         <span
-                          style={{ background: r.avatarColor, color: r.avatarText }}
+                          style={{
+                            background: r.avatarColor,
+                            color: r.avatarText,
+                          }}
                           className="flex h-[26px] w-[26px] items-center justify-center rounded-full font-fredoka text-[13px] font-semibold"
                         >
                           {r.initial}
@@ -246,12 +303,17 @@ export default function CreatePostModal() {
                 onChange={(e) => {
                   setDescription(e.target.value);
                   if (errors.description) {
-                    setErrors((prev) => ({ ...prev, description: undefined }));
+                    setErrors((prev) => ({
+                      ...prev,
+                      description: undefined,
+                    }));
                   }
                 }}
                 placeholder="Contá cómo le fue hoy…"
                 className={`mb-[22px] min-h-[120px] w-full resize-y rounded-[14px] border-[1.5px] px-4 py-[14px] text-[15px] leading-relaxed text-[#3F362E] placeholder:text-[#B6A99B] ${
-                  errors.description ? "border-[#D9583C]" : "border-[#EADFD0] bg-white"
+                  errors.description
+                    ? "border-[#D9583C]"
+                    : "border-[#EADFD0] bg-white"
                 }`}
               />
               {errors.description && (

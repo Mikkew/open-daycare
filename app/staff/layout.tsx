@@ -1,6 +1,8 @@
+"use client";
+
 import Sidebar from "@/app/components/Sidebar";
-import { getServerClient } from "@/lib/supabase/server";
 import CreatePostModal from "@/app/components/staff/CreatePostModal";
+import { useState } from "react";
 
 interface StaffUserWithDaycare {
   full_name: string;
@@ -9,28 +11,21 @@ interface StaffUserWithDaycare {
   rooms: { name: string } | null;
 }
 
-export default async function StaffLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await getServerClient();
+// Datos de ejemplo - en producción vendrían de Supabase
+const MOCK_USER = {
+  full_name: "Caro Giménez",
+  role: "staff",
+  room: "Soles",
+};
 
-  const { data: user } = await supabase
-    .from("users")
-    .select("full_name, role, daycares(name), rooms(name)")
-    .eq("role", "staff")
-    .single() as { data: StaffUserWithDaycare | null; error: unknown };
-
-  const sidebarUser = user
-    ? {
-        full_name: user.full_name,
-        role: user.role,
-        room: user.daycares?.name || user.rooms?.name || undefined,
-      }
-    : undefined;
+export default function StaffLayout({ children }: { children: React.ReactNode }) {
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen">
-      <CreatePostModal />
+      <CreatePostModal open={modalOpen} onOpenChange={setModalOpen} />
       <Sidebar
-        user={sidebarUser}
+        user={MOCK_USER}
         navItems={[
           { label: "Feed", href: "/staff" },
           { label: "Niños", href: "/staff/kids" },
@@ -38,7 +33,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           { label: "Avisos", href: "#" },
           { label: "Mi cuenta", href: "#" },
         ]}
-        ctaButton={{ label: "Nueva publicación" }}
+        ctaButton={{ label: "Nueva publicación", onClick: () => setModalOpen(true) }}
       />
       <main className="h-screen min-w-0 flex-1 overflow-y-auto">
         {children}
