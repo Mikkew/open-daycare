@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getServerClient } from "@/lib/supabase/server";
 import { getRooms } from "@/lib/rooms";
-import ParentsSection from "@/app/components/ParentsSection";
+import ParentsSection from "@/app/components/staff/ParentsSection";
 import { getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
 import type { AllergyTag } from "@/app/lib/children";
-import EditChildModal from "@/app/components/EditChildModal";
-import ArchiveButton from "@/app/components/ArchiveChildButton";
+import EditChildModal from "@/app/components/staff/EditChildModal";
+import ArchiveButton from "@/app/components/staff/ArchiveChildButton";
 
 function ArrowLeftIcon() {
   return (
@@ -142,7 +142,7 @@ export default async function KidProfilePage({ params }: { params: Promise<Param
   return (
     <div className="mx-auto w-full max-w-[820px] px-10 py-[34px] pb-20">
       <Link
-        href="/kids"
+        href="/staff/kids"
         className="mb-5 flex items-center gap-[7px] text-[14px] font-bold text-[#94887B]"
       >
         <ArrowLeftIcon />

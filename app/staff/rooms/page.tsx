@@ -1,6 +1,6 @@
 import { getServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import RoomManager from "@/app/components/RoomManager";
+import RoomManager from "@/app/components/staff/RoomManager";
 
 function ArrowLeftIcon() {
   return (
@@ -46,7 +46,7 @@ export default async function RoomsPage() {
   return (
     <div className="mx-auto w-full max-w-[880px] px-10 py-[34px] pb-20">
       <Link
-        href="/kids"
+        href="/staff/kids"
         className="mb-5 flex items-center gap-[7px] text-[14px] font-bold text-[#94887B]"
       >
         <ArrowLeftIcon />

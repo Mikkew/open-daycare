@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Child, getAllergyLabel, getAllergyBadgeColors } from "@/app/lib/children";
-import ChildActions from "@/app/components/ChildActions";
+import ChildActions from "@/app/components/staff/ChildActions";
 
 function ChevronIcon() {
   return (
