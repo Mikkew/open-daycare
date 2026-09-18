@@ -1,7 +1,7 @@
 import { getServerClient } from "@/lib/supabase/server";
 import { getRooms } from "@/lib/rooms";
-import ChildrenList from "@/app/components/ChildrenList";
-import AddChildModal from "@/app/components/AddChildModal";
+import ChildrenList from "@/app/components/staff/ChildrenList";
+import AddChildModal from "@/app/components/staff/AddChildModal";
 
 export default async function KidsPage() {
   const supabase = await getServerClient();

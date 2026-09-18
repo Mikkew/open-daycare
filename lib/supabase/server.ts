@@ -14,7 +14,7 @@ export async function getServerClient() {
           return cookieStore.getAll();
         },
         setAll() {
-          // Cannot set cookies in server components — middleware handles this
+          // Cannot set cookies in server components — proxy handles this
         },
       },
     },
@@ -44,4 +44,21 @@ export async function getServerActionClient() {
       },
     },
   );
+}
+
+export type UserRole = "staff" | "parent" | "admin";
+
+export async function getUserRole(userId: string): Promise<UserRole | null> {
+  const supabase = await getServerClient();
+  const { data, error } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", userId)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data.role as UserRole;
 }

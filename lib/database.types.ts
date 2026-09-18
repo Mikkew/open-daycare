@@ -7,6 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
@@ -81,6 +83,53 @@ export type Database = {
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_summaries: {
+        Row: {
+          activity_count: number
+          child_id: string
+          created_at: string
+          date: string
+          highlights: string | null
+          id: string
+          meal_count: number
+          mood: string | null
+          sleep_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          activity_count?: number
+          child_id: string
+          created_at?: string
+          date?: string
+          highlights?: string | null
+          id?: string
+          meal_count?: number
+          mood?: string | null
+          sleep_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          activity_count?: number
+          child_id?: string
+          created_at?: string
+          date?: string
+          highlights?: string | null
+          id?: string
+          meal_count?: number
+          mood?: string | null
+          sleep_minutes?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_summaries_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
             referencedColumns: ["id"]
           },
         ]

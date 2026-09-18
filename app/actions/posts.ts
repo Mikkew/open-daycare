@@ -18,9 +18,10 @@ const MIN_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function createPost(data: {
-  type: string;
+  recipientId: string;
+  typeId: string;
   title: string;
-  body: string;
+  description: string;
   image?: File | null;
 }) {
   const supabase = await getServerActionClient();
@@ -52,11 +53,15 @@ export async function createPost(data: {
     throw new Error("No tenés una sala asignada. Contactá al administrador.");
   }
 
+  if (!data.recipientId) {
+    throw new Error("Elegí un destinatario");
+  }
+
   if (!data.title.trim()) {
     throw new Error("El título es obligatorio");
   }
 
-  if (!data.body.trim()) {
+  if (!data.description.trim()) {
     throw new Error("La descripción es obligatoria");
   }
 
@@ -80,9 +85,10 @@ export async function createPost(data: {
     .insert({
       author_id: user.id,
       room_id: userData.room_id,
-      type: data.type as Database["public"]["Enums"]["post_type"],
+      type: data.typeId as Database["public"]["Enums"]["post_type"],
       title: data.title.trim(),
-      body: data.body.trim(),
+      body: data.description.trim(),
+      published_at: new Date().toISOString(),
     })
     .select()
     .single();
@@ -91,27 +97,42 @@ export async function createPost(data: {
     throw new Error(`Error al crear la publicación: ${postError.message}`);
   }
 
-  const { data: activeChildren, error: childrenError } = await supabase
-    .from("children")
-    .select("id")
-    .eq("room_id", userData.room_id)
-    .eq("status", "active");
+  if (data.recipientId === "toda-la-sala") {
+    const { data: activeChildren, error: childrenError } = await supabase
+      .from("children")
+      .select("id")
+      .eq("room_id", userData.room_id)
+      .eq("status", "active");
 
-  if (childrenError) {
-    throw new Error(
-      `Error al consultar los niños: ${childrenError.message}`
-    );
-  }
+    if (childrenError) {
+      throw new Error(
+        `Error al consultar los niños: ${childrenError.message}`
+      );
+    }
 
-  if (activeChildren && activeChildren.length > 0) {
+    if (activeChildren && activeChildren.length > 0) {
+      const { error: postChildrenError } = await supabase
+        .from("post_children")
+        .insert(
+          activeChildren.map((child) => ({
+            post_id: post.id,
+            child_id: child.id,
+          }))
+        );
+
+      if (postChildrenError) {
+        throw new Error(
+          `Error al asociar los niños: ${postChildrenError.message}`
+        );
+      }
+    }
+  } else {
     const { error: postChildrenError } = await supabase
       .from("post_children")
-      .insert(
-        activeChildren.map((child) => ({
-          post_id: post.id,
-          child_id: child.id,
-        }))
-      );
+      .insert({
+        post_id: post.id,
+        child_id: data.recipientId,
+      });
 
     if (postChildrenError) {
       throw new Error(
@@ -152,7 +173,8 @@ export async function createPost(data: {
     }
   }
 
-  revalidatePath("/");
+  revalidatePath("/staff");
+  revalidatePath("/family");
 
   return { postId: post.id };
 }

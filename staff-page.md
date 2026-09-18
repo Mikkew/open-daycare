@@ -1,0 +1,88 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "OpenDayCare Sala Soles" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e9]:
+          - generic [ref=e10]: OpenDayCare
+          - generic [ref=e11]: Sala Soles
+      - button "Nueva publicación" [ref=e12]
+      - navigation [ref=e13]:
+        - link "Feed" [ref=e14] [cursor=pointer]:
+          - /url: /staff
+        - link "Niños" [ref=e17] [cursor=pointer]:
+          - /url: /staff/kids
+        - link "Salas" [ref=e22] [cursor=pointer]:
+          - /url: /staff/rooms
+        - link "Avisos" [ref=e25] [cursor=pointer]:
+          - /url: "#"
+        - link "Mi cuenta" [ref=e28] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=e33]:
+        - generic [ref=e34]: C
+        - generic [ref=e35]:
+          - generic [ref=e36]: Caro Giménez
+          - generic [ref=e37]: Maestra · Soles
+        - button "Cerrar sesión" [ref=e38] [cursor=pointer]
+    - main [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: GUARDERÍA · SALA SOLES
+          - heading "Buenas, Caro" [level=1] [ref=e45]
+          - paragraph [ref=e46]: 12 niños · martes 17 jun
+        - generic [ref=e48]:
+          - button "Decrementar contador" [ref=e49]: −
+          - generic [ref=e50]: "0"
+          - button "Incrementar contador" [ref=e51]: +
+        - link "C Compartí un momento…" [ref=e52] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e53]: C
+          - generic [ref=e54]: Compartí un momento…
+        - generic [ref=e59]: PUBLICADO HOY
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: Anuncio general
+                - generic [ref=e70]: 03:29 p. m. · publicado por vos
+              - generic [ref=e71]: ANUNCIO
+            - generic [ref=e74]: "Para: toda la sala"
+            - paragraph [ref=e75]: Recordamos que el viernes 20 hay reunión de padres a las 18:00hs.
+            - generic [ref=e76]:
+              - generic [ref=e77]: "0"
+              - link "0" [ref=e80] [cursor=pointer]:
+                - /url: "#"
+              - link "Editar" [ref=e83] [cursor=pointer]:
+                - /url: "#"
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - generic [ref=e86]: E
+              - generic [ref=e87]:
+                - generic [ref=e88]: Emilia García
+                - generic [ref=e89]: 02:29 p. m. · publicado por vos
+              - generic [ref=e90]: ACTIVIDAD
+            - generic [ref=e93]: "Para: familia de Emilia García"
+            - paragraph [ref=e94]: Hoy comimos pollo con arroz y ensalada. Todos terminaron su plato.
+            - generic [ref=e95]:
+              - generic [ref=e96]: "0"
+              - link "0" [ref=e99] [cursor=pointer]:
+                - /url: "#"
+              - link "Editar" [ref=e102] [cursor=pointer]:
+                - /url: "#"
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic [ref=e105]: E
+              - generic [ref=e106]:
+                - generic [ref=e107]: Emilia García
+                - generic [ref=e108]: 12:29 p. m. · publicado por vos
+              - generic [ref=e109]: ACTIVIDAD
+            - generic [ref=e112]: "Para: familia de Emilia García, Tomás Rodríguez"
+            - paragraph [ref=e113]: Los niños disfrutaron de una actividad de modelado con plastilina de colores.
+            - generic [ref=e114]:
+              - generic [ref=e115]: "0"
+              - link "0" [ref=e118] [cursor=pointer]:
+                - /url: "#"
+              - link "Editar" [ref=e121] [cursor=pointer]:
+                - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=e127] [cursor=pointer]
+  - alert [ref=e131]

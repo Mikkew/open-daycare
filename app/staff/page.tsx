@@ -1,6 +1,6 @@
 import { getServerClient } from "@/lib/supabase/server";
 import PostCard from "@/app/components/PostCard";
-import Counter from "@/app/components/Counter";
+import Counter from "@/app/components/staff/Counter";
 import type { Post } from "@/app/lib/feed";
 
 const postTypeToKind: Record<string, Post["kind"]> = {
